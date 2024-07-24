@@ -1,5 +1,5 @@
 "use client";
-import Form from '../../components/common/Form'
+import Form from '../../components/auth/Form'
 import { motion } from 'framer-motion'
 
 const Login: React.FC = () => {
