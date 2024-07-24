@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
+    "firebase": "^10.12.4",
     "framer-motion": "^11.3.12",
     "next": "14.2.5",
     "react": "^18",
