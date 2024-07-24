@@ -1,14 +1,15 @@
 "use client";
-import Link from 'next/link'
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)  // ログイン状態を管理する状態
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);  // ログイン状態を管理する状態
 
   const handleLogout = () => {
-    setIsLoggedIn(false)
+    setIsLoggedIn(false);
     // ログアウト処理をここに追加
   }
 
@@ -18,11 +19,17 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between">
           <div className="flex space-x-7">
             <div>
-              <Link href="/" className="flex items-center py-4 px-2">
-                <span className="font-semibold text-gray-500 text-lg">
-                  {isLoggedIn ? '就活支援アプリ' : ''}
+              {isLoggedIn ? (
+                <span className="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">
+                  就活支援アプリ
                 </span>
-              </Link>
+              ) : (
+                <Link href="/" className="flex items-center py-4 px-2">
+                  <span className="font-semibold text-gray-500 text-lg">
+                    就活支援アプリ
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-3">
@@ -31,7 +38,7 @@ const Navbar: React.FC = () => {
                 <span className="py-2 px-2 font-medium text-gray-500">日付: {new Date().toLocaleDateString()}</span>
                 <button 
                   onClick={handleLogout} 
-                  className="py-2 px-2 font-medium text-white bg-primary rounded hover:bg-primary-dark transition duration-300"
+                  className="py-2 px-2 font-medium text-white bg-error rounded hover:bg-accent transition duration-300"
                 >
                   ログアウト
                 </button>
@@ -91,4 +98,4 @@ const Navbar: React.FC = () => {
   )
 }
 
-export default Navbar
+export default Navbar;
