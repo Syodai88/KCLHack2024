@@ -30,4 +30,13 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  .footer-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white; /* 必要に応じて背景色を設定 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 必要に応じてシャドウを設定 */
+  }
+  
 }
