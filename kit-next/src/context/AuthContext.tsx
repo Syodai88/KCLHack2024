@@ -8,6 +8,7 @@ import firebase from 'firebase/compat/app';
 interface AuthContextProps {
   user: User | null;
   loading: boolean;
+  authError: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -19,7 +20,9 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const router = useRouter();
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -30,29 +33,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    setAuthError(null);
     try{
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const isNotVerified = !userCredential.user.emailVerified;
       if (isNotVerified) {
         await reSendVerifyMail(userCredential.user);
         await logout();
+        setAuthError('メールアドレスが認証されていません。認証メールを再送信しました。');
         console.error('Your email address has not been confirmed. A confirmation email has been sent again.')
       }
     } catch (error: any){
         switch (error.code){
           case 'auth/invalid-email':
+            setAuthError('メールアドレスが無効です。');
             console.error('Invalid email.');
             break;
           case 'auth/user-not-found':
-            console.error('Invalid email or user not found.');
+            setAuthError('登録されていません。ユーザー登録を行ってください。');
+            console.error('user not found.');
             break;
           case 'auth/wrong-password':
+            setAuthError('パスワードが間違っています。');
             console.error('Incorrect password.');
             break;
           case 'auth/too-many-requests':
+            setAuthError('リクエストが多すぎます。しばらくしてから再度お試しください。');
             console.error('Too many requests. Please try again later.');
             break;
           default:
+            setAuthError('ログインに失敗しました');
             console.error('Failed to log in:', error.message);
         }
         return;
@@ -61,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const reSendVerifyMail = async (user: User) => {
+    setAuthError(null);
     try {
       if (user){
         await sendEmailVerification(user);
@@ -69,9 +80,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any){
         switch (error.code){
           case 'auth/too-many-requests':
+            setAuthError('リクエストが多すぎます。しばらくしてから再度お試しください')
             console.error('Too many requests. Please try again later.');
             break;
           default:
+            setAuthError('認証メールの送信に失敗しました');
             console.error('Failed to send verification email:', error.message);
         }
         return;
@@ -79,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const register = async (email: string, password: string) => {
+    setAuthError(null);
     try{
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(userCredential.user);
@@ -86,15 +100,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any){
         switch (error.code){
           case 'auth/email-already-in-use':
+            setAuthError('既にメールアドレスが登録されています');
             console.error('The email address is already in use by another account.');
             break;
           case 'auth/invalid-email':
+            setAuthError('メールアドレスが無効です');
             console.error('Invalid email.');
             break;
           case 'auth/weak-password':
+            setAuthError('パスワードは6文字以上である必要があります');
             console.error('The password must be 6 characters long or more.');
             break;
           default:
+            setAuthError('登録に失敗しました');
             console.error('Failed to register:', error.message);
         }
         return;
@@ -125,7 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, verifyEmail }}>
+    <AuthContext.Provider value={{ user, loading, authError, login, register, logout, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );
