@@ -25,8 +25,8 @@ const Form: React.FC<FormProps> = ({ type }) => {
     confirmPassword: ''
   })
 
-  const {login, register} = useAuth();
-  const [error, setError] = useState< string | null>(null);
+  const {login, register, authError} = useAuth();
+  const [formError, setFormError] = useState< string | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,10 +35,10 @@ const Form: React.FC<FormProps> = ({ type }) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError(null);
+    setFormError(null);
     const emailPattern = /^[a-zA-Z0-9._%+-]+@mail\.kyutech\.jp$/;
     if (!emailPattern.test(formData.email)){
-      setError('九工大メール(@kyutech.mail.jp)を入力してください');
+      setFormError('九工大メール(@kyutech.mail.jp)を入力してください');
       return;
     }
     if (type === 'login'){
@@ -46,19 +46,19 @@ const Form: React.FC<FormProps> = ({ type }) => {
         await login(formData.email, formData.password);
         console.log('Logged in successfully');
       }catch(error){
-        setError('メールアドレスまたはパスワードが間違っています');
+        setFormError('メールアドレスまたはパスワードが間違っています');
         console.error('Login Error:', error);
       }
     } else {
       try{
         if (formData.password !== formData.confirmPassword){
-          setError('パスワードが一致しません');
+          setFormError('パスワードが一致しません');
           return;
         }
         await register(formData.email,formData.password);
         console.log('Registered successfully');
       }catch(error){
-        setError('既にメールアドレスが登録されています')
+        setFormError('登録に失敗しました')
         console.error('Failed to register:', error);
       }
     }
@@ -67,7 +67,8 @@ const Form: React.FC<FormProps> = ({ type }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <p className='text-error'>{error}</p>}
+      {authError && <p className='text-error'>{authError}</p>}
+      {formError && <p className='text-error'>{formError}</p>}
       <div >
         <TextField
           label="メールアドレス"
