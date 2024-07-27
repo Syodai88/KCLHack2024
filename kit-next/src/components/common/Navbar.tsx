@@ -1,14 +1,16 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from './../../context/AuthContext'
 
 
 const Navbar: React.FC = () => {
+  const { logout } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);  // ログイン状態を管理する状態
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    // ログアウト処理をここに追加
+    logout();
   }
 
   return (
