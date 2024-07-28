@@ -1,15 +1,12 @@
 "use client";
 import Link from 'next/link';
-import { useState } from 'react';
 import { useAuth } from './../../context/AuthContext'
 
 
 const Navbar: React.FC = () => {
-  const { logout } = useAuth();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);  // ログイン状態を管理する状態
+  const { user,logout } = useAuth();
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
     logout();
   }
 
@@ -19,7 +16,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between">
           <div className="flex space-x-7">
             <div>
-              {isLoggedIn ? (
+              {user ? (
                 <span className="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">
                   就活支援アプリ
                 </span>
@@ -33,7 +30,7 @@ const Navbar: React.FC = () => {
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-3">
-            {isLoggedIn ? (
+            {user ? (
               <>
                 <span className="py-2 px-2 font-medium text-gray-500">日付: {new Date().toLocaleDateString()}</span>
                 <button 
