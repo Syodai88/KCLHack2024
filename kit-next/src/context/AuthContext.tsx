@@ -42,6 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await logout();
         setAuthError('メールアドレスが認証されていません。認証メールを再送信しました。');
         console.error('Your email address has not been confirmed. A confirmation email has been sent again.')
+      } else {
+        router.push('/home');
       }
     } catch (error: any){
         switch (error.code){
@@ -96,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try{
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(userCredential.user);
-      router.push('/verify');
+      router.push('/auth/verify');
     } catch (error: any){
         switch (error.code){
           case 'auth/email-already-in-use':
@@ -122,6 +124,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
+    router.push('/');
   };
 
   const verifyEmail = async (oobCode: string) => {
