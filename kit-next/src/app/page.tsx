@@ -2,7 +2,7 @@
 "use client";
 import { motion } from 'framer-motion';
 
-const Home: React.FC = () => {
+const Welcome: React.FC = () => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,4 +22,4 @@ const Home: React.FC = () => {
   );
 }
 
-export default Home;
+export default Welcome;
