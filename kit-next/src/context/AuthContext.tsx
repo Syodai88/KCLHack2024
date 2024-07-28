@@ -39,7 +39,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const isNotVerified = !userCredential.user.emailVerified;
       if (isNotVerified) {
         await reSendVerifyMail(userCredential.user);
-        await logout();
+        await signOut(auth);
+        setUser(null);
         setAuthError('メールアドレスが認証されていません。認証メールを再送信しました。');
         console.error('Your email address has not been confirmed. A confirmation email has been sent again.')
       } else {
