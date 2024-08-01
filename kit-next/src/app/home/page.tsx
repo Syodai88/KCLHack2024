@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
+import Companycard from '../../components/common/Companycard'
 
 const Home: React.FC = () => {
   const { user, loading } = useAuth();
@@ -21,6 +22,9 @@ const Home: React.FC = () => {
     <div>
       <h1>Welcome, {user?.email}</h1>
       <p>User ID: {user?.uid}</p>
+    </div>
+    <div>
+      <Companycard />
     </div>
   );
 };
