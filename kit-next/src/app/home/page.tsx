@@ -22,9 +22,25 @@ const Home: React.FC = () => {
     <div>
       <h1>Welcome, {user?.email}</h1>
       <p>User ID: {user?.uid}</p>
-    </div>
-    <div>
-      <Companycard />
+      <div>
+      <Companycard           
+        image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
+        name='ネオテック・エンジニアリング'
+        details='最先端技術を駆使し、持続可能な未来を創造する総合エンジニアリング企業。イノベーションに重点を置く。'/>
+      </div>
+      <div>
+      <Companycard           
+        image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
+        name='インフィニティ・ソリューションズ'
+        details='無限の可能性を引き出す技術革新企業。顧客のニーズに合わせたカスタマイズソリューションを提供。'/>
+      </div>
+      <div>
+      <Companycard           
+        image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
+        name='テクノフュージョン・デザイン'
+        details='技術とデザインの融合で新しい価値を提供する企業。エンジニアリングとクリエイティブの力を結集。'/>
+      </div>
+
     </div>
   );
 };
