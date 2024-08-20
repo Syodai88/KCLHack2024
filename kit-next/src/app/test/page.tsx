@@ -1,17 +1,20 @@
+// pages/index.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import SearchForm from '../../components/search/searchForm';
 
-export default function Home() {
-  const [query, setQuery] = useState('');
+const Home: React.FC = () => {
   const [results, setResults] = useState(null);
 
-  const searchCompany = async () => {
+  useEffect(() => {
+    // ページロード時に企業検索を実行する
+    searchCompany('');
+  }, []);
+
+  const searchCompany = async (query: string) => {
     try {
-      const res = await fetch(`/api/searchCompany?query=${encodeURIComponent(query)}`);
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      const res = await fetch(`/api/searchCompany?name=${encodeURIComponent(query)}`);
       const data = await res.json();
       setResults(data);
     } catch (error) {
@@ -21,21 +24,16 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <h1>Company Search</h1>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Enter company name"
-      />
-      <button onClick={searchCompany}>Search</button>
+    <div className="space-y-6">
+      <SearchForm onSearch={searchCompany} />
       {results && (
-        <div>
-          <h2>Search Results:</h2>
-          <pre>{JSON.stringify(results, null, 2)}</pre>
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-md w-full">
+          <h2 className="text-2xl font-semibold text-accent mb-4">Search Results:</h2>
+          <pre className="bg-gray-100 p-4 rounded-md text-gray-700">{JSON.stringify(results, null, 2)}</pre>
         </div>
       )}
     </div>
   );
 }
+
+export default Home;
