@@ -1,24 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const apiKey = process.env.NEXT_PUBLIC_YAHOO_API_KEY;
-
-export async function GET(request: NextRequest) {
-  console.log('API Key:', apiKey);  // APIキーの値をログに出力
-
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('query');
-
-  if (!query) {
-    return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
+  const name = searchParams.get('name');
+  
+  if (!name) {
+    return NextResponse.json({ error: 'name query parameter is required' }, { status: 400 });
   }
 
-  const url = `https://job.yahooapis.jp/v1/furusato/company/?appid=${apiKey}&query=${encodeURIComponent(query)}`;
+  const apiKey = process.env.NEXT_PUBLIC_GBIZINFO_API_KEY;
+  const apiUrl = `https://info.gbiz.go.jp/hojin/v1/hojin?name=${encodeURIComponent(name)}&page=1&limit=1000`;
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'accept': 'application/json',
+        'X-hojinInfo-api-token': apiKey,
+      },
+    });
+
     return NextResponse.json(response.data);
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching data from Yahoo API' }, { status: 500 });
+    let errorMessage = 'Failed to fetch company data';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
