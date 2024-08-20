@@ -27,7 +27,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         placeholder="Enter company name"
         className="flex-grow px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-primary text-black"
       />
