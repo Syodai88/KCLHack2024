@@ -1,10 +1,10 @@
-'use client'
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 
-const MyPage: React.FC = () => {
+const Sidebar: React.FC = () => {
     const router = useRouter();
 
     const handleAvatarClick = () => {
@@ -12,9 +12,8 @@ const MyPage: React.FC = () => {
     };
 
     return (
-        <div className="w-60 p-5 border-l border-gray-300 bg-white absolute right-0 top-0 h-full overflow-y-auto mt-14">
+        <div className="p-5 bg-white h-full overflow-y-auto">
             <div className="mb-5 cursor-pointer" onClick={handleAvatarClick}>
-                {/* ここにアイコン画像を追加します */}
                 <Avatar>
                     <img src="/path-to-avatar-icon.png" alt="avatar" />
                 </Avatar>
@@ -27,4 +26,4 @@ const MyPage: React.FC = () => {
     );
 };
 
-export default MyPage;
+export default Sidebar;
