@@ -12,7 +12,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ image, name, details }) => {
   return (
     <Card sx={{ display: 'flex', marginBottom: 2 }}>
       <Grid container spacing={0}>
-        <Grid xs={2}>
+        <Grid xs={2} sx={{justifyContent: 'center'}}>
           <CardMedia
           component="img"
           //sx={{ width: 160 }}
@@ -25,7 +25,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ image, name, details }) => {
           <Typography component="div" variant="h5" sx={{marginBottom: 2}}>
             {name}
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" component="div" sx={{marginBottom: 5}}>
+          <Typography variant="subtitle1" color="text.secondary" component="div" sx={{marginBottom: 2}}>
             {details}
           </Typography>
           </CardContent>
