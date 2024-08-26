@@ -30,14 +30,14 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ image, name, details }) => {
           </Typography>
           </CardContent>
           <Grid container spacing={0}>
-            <Grid xs={2}>
+            <Grid xs={3}>
               <CardActions sx={{marginLeft: 5, alignitems: 'center'}}>
                 <Button size="medium" variant="outlined">
                   詳しく見る
                 </Button>
               </CardActions>
             </Grid>
-            <Grid xs={10}>
+            <Grid xs={9}>
               <CardActions sx={{marginLeft: 5, alignitems: 'center'}}>
                 <Button startIcon={<FavoriteIcon />} size="medium" variant="outlined" >
                   気になる
