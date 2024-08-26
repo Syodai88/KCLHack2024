@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import Companycard from '../../components/common/Companycard'
+import SearchBox from '../../components/common/SearchBox'
 
 const Home: React.FC = () => {
   const { user, loading } = useAuth();
@@ -22,6 +23,9 @@ const Home: React.FC = () => {
     <div>
       <h1>Welcome, {user?.email}</h1>
       <p>User ID: {user?.uid}</p>
+      <div>
+        <SearchBox />
+      </div>
       <div>
       <Companycard           
         image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
