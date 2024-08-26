@@ -16,9 +16,11 @@ const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ show, onClose, 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center text-black">
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">企業情報</h2>
+        <h1 className="text-xl font-semibold mb-4">{details.name}</h1>
         <p>法人番号: {corporateNumber}</p>
-        <p>会社名: {details.representative_name}</p>
+        <p>所在地: {details.location}</p>
+        <p>ホームページ: <a href={details.company_url} target="_blank" rel="noopener noreferrer">{details.company_url}</a></p>    
+        <p>業務内容:{details.business_summary}</p>    
         <button
           onClick={onClose}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
