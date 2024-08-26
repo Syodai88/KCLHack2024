@@ -1,8 +1,8 @@
 import './globals.css'
 import { Metadata } from 'next'
 import Navbar from './../components/common/Navbar'
-import Footer from './../components/common/Footer'
-import { useAuth, AuthProvider } from './../context/AuthContext'
+import {AuthProvider } from './../context/AuthContext'
+
 
 export const metadata: Metadata = {
   title: '就活支援アプリ | 大学生の未来をサポート',
@@ -18,7 +18,6 @@ const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <main className="container mx-auto px-4 py-8 flex-grow">
             {children}
           </main>
-          <Footer />
         </body>
       </html>
     </AuthProvider>
