@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import Companycard from '../../components/common/Companycard'
 import SearchBox from '../../components/common/SearchBox'
+import SwitchButton from '../../components/common/SwitchButton'
 
 const Home: React.FC = () => {
   const { user, loading } = useAuth();
@@ -25,6 +26,9 @@ const Home: React.FC = () => {
       <p>User ID: {user?.uid}</p>
       <div>
         <SearchBox />
+      </div>
+      <div>
+        <SwitchButton />
       </div>
       <div>
       <Companycard           
