@@ -1,39 +1,55 @@
-// pages/index.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import SearchForm from '../../components/search/searchForm';
-import SplitPage from '@/components/common/SplitPage';
+import SplitPage from '../../components/common/SplitPage';
+import ResultsTable from '@/components/search/ResultsTable';
 
+
+type Company = {
+  corporate_number: string;
+  name: string;
+  location: string;
+  status: string;
+  update_date: string;
+};
 
 const Home: React.FC = () => {
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<Company[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   useEffect(() => {
     // ページロード時に企業検索を実行する
-    searchCompany('');
+    fetchCompanies('');
   }, []);
 
-  const searchCompany = async (query: string) => {
+  const fetchCompanies = async (query: string) => {
     try {
       const res = await fetch(`/api/searchCompany?name=${encodeURIComponent(query)}`);
       const data = await res.json();
-      setResults(data);
+      setResults(data['hojin-infos'] || []); 
     } catch (error) {
-      console.error('Error searching companies:', error);
-      setResults(null);
+      console.error('Error fetching companies:', error);
+      setResults([]);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   return (
     <SplitPage sidebar={<p className="text-black">Sidebar Content</p>}>
       <div className="space-y-6">
-        <SearchForm onSearch={searchCompany} />
-        {results && (
-          <div className="mt-6 bg-white p-6 rounded-lg shadow-md w-full">
-            <h2 className="text-2xl font-semibold text-accent mb-4">Search Results:</h2>
-            <pre className="bg-gray-100 p-4 rounded-md text-gray-700">{JSON.stringify(results, null, 2)}</pre>
-          </div>
+        <SearchForm onSearch={fetchCompanies} />
+        {results &&(
+          <ResultsTable
+            companies={results}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
     </SplitPage>
