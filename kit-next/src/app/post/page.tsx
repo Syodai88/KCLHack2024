@@ -27,18 +27,19 @@ return (
         alignItems: 'center', 
         justifyContent: 'center',
         margin: '0 auto',
+        padding: 2, // 親コンテナにパディングを追加して調整
       }}
     >
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
         <TextField
           fullWidth 
           id="filled-basic" 
           label="タイトル" 
           variant="outlined" 
-          sx={{ width: '60%', backgroundColor: 'white', margin: 2 }}
+          sx={{ width: '60%', backgroundColor: 'white'}}
         />
       </div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
         <TextField
           fullWidth
           id="filled-multiline-static"
@@ -47,7 +48,7 @@ return (
           rows={25}
           //defaultValue="Default Value"
           variant="outlined"
-          sx={{ width: '80%', backgroundColor: 'white' }}
+          sx={{ width: '80%', backgroundColor: 'white'}}
         />
       </div>
     </Box>
