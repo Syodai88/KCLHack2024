@@ -1,5 +1,6 @@
 "use client";
 import { motion } from 'framer-motion';
+import Footer from '@/components/common/Footer';
 
 const Verify: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const Verify: React.FC = () => {
           <h2 className="text-3xl font-semibold text-accent mb-6">リンクにアクセスしてログインしてください</h2>
         </div>
       </motion.div>
+      <Footer />
     </div>
   );
 }
