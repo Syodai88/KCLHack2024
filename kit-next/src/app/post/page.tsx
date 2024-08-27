@@ -29,13 +29,13 @@ return (
         margin: '0 auto',
       }}
     >
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
         <TextField
           fullWidth 
           id="filled-basic" 
           label="タイトル" 
           variant="outlined" 
-          sx={{ width: '60%', backgroundColor: 'white' }}
+          sx={{ width: '60%', backgroundColor: 'white', margin: 2 }}
         />
       </div>
       <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -45,7 +45,7 @@ return (
           label="本文"
           multiline
           rows={25}
-          defaultValue="Default Value"
+          //defaultValue="Default Value"
           variant="outlined"
           sx={{ width: '80%', backgroundColor: 'white' }}
         />
