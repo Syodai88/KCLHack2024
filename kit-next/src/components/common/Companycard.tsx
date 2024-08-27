@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, CardContent, CardMedia, Typography, CardActions, Button, Box, Grid } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, CardActions, Button, Grid } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
 interface CompanyCardProps {

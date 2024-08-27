@@ -3,8 +3,6 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import Companycard from '../../components/common/Companycard'
-import SearchBox from '../../components/common/SearchBox'
-import SwitchButton from '../../components/common/SwitchButton'
 import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 
