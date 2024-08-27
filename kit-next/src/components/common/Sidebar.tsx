@@ -3,10 +3,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
+import { RxAvatar } from "react-icons/rx";  // 追加
 
 const Sidebar: React.FC = () => {
     const router = useRouter();
 
+    // アイコンクリック時のハンドラー
     const handleAvatarClick = () => {
         router.push('/my-page');
     };
@@ -14,8 +16,9 @@ const Sidebar: React.FC = () => {
     return (
         <div className="p-5 bg-white h-full overflow-y-auto">
             <div className="mb-5 cursor-pointer" onClick={handleAvatarClick}>
-                <Avatar>
-                    <img src="/path-to-avatar-icon.png" alt="avatar" />
+                {/* ここでアイコンのサイズを調整 */}
+                <Avatar style={{ width: 70, height: 70 }}>
+                    <RxAvatar size={50} />
                 </Avatar>
             </div>
             <Link href="/post-page" className="block text-blue-500 no-underline my-2">感想投稿ページ</Link>

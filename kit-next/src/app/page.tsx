@@ -1,6 +1,8 @@
 // Home.tsx
 "use client";
 import { motion } from 'framer-motion';
+import SplitPage from '@/components/common/SplitPage';
+import Sidebar from '@/components/common/Sidebar';
 
 const Welcome: React.FC = () => {
   return (
@@ -22,5 +24,13 @@ const Welcome: React.FC = () => {
   );
 }
 
-export default Welcome;
+const Home: React.FC = () => {
+  return (
+    <SplitPage sidebar={<Sidebar />}>
+      <Welcome />
+    </SplitPage>
+  );
+}
+
+export default Home;
 
