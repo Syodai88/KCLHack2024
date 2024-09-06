@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
-import { RxAvatar } from "react-icons/rx";  // 追加
+import { RxAvatar } from "react-icons/rx";
 
 const Sidebar: React.FC = () => {
     const router = useRouter();
