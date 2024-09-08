@@ -1,14 +1,24 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import Companycard from '../../components/common/Companycard'
 import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
+import SearchForm from '@/components/registercompany/searchForm';
 
 const Content: React.FC = () => {
+  interface Company  {
+    corporate_number: string;
+    name: string;
+    location: string;
+    status: string;
+    update_date: string;
+  }
+
   const { user, loading } = useAuth();
   const router = useRouter();
+  
 
   useEffect(() => {
     if (!loading && !user) {
@@ -47,9 +57,28 @@ const Content: React.FC = () => {
   );
 };
 const Home: React.FC = () => {
+  interface Company  {
+    corporate_number: string;
+    name: string;
+    location: string;
+    status: string;
+    update_date: string;
+  }
+  const [results, setResults] = useState<Company[]>([]);
+  const fetchCompanies = async (query: string) => {
+    try {
+      const res = await fetch(`/api/searchCompany?name=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setResults(data['hojin-infos'] || []); 
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      setResults([]);
+    }
+  };
   return (
     <SplitPage sidebar={<Sidebar />}>
-    <Content />
+      <SearchForm onSearch={fetchCompanies} />
+      <Content />
     </SplitPage>
   );
 }
