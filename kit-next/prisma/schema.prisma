@@ -13,39 +13,153 @@ datasource kclhack2024database {
   url      = env("NEXT_PUBLIC_DATABASE_URL")
 }
 
-//企業情報保存のデータベース
+//ユーザー情報のテーブル、名前以下の初期値は秘密など適当に
+model User{
+  id                String   @id @unique // firebase側で設定されたID
+  email             String   @unique // メールアドレス: ユーザーの登録メール
+  name              String   // 名前: ユーザーの氏名。
+  year              String   // 学年（B1~B4、M1~M2、D1~D3から選択）
+  department        String   // 学科
+  other             String?   //任意の情報(null可)
+
+  posts     Post[]     // Postとのリレーション
+  likes     Like[]     // Likeとのリレーション
+  interests Interest[] // Interestとのリレーション
+  interns   Intern[]   // Internとのリレーション
+  events    Event[]    // Eventとのリレーション
+  comments   Comment[] // Commentとのリレーション
+}
+
+//企業情報保存のテーブル
 model Company {
   corporateNumber              String   @id @unique  // 法人番号: 企業の一意の識別子。
   name                         String   // 企業名: 企業を識別するための基本情報。
   kana                         String?  // 企業名のフリガナ: 企業名の読み仮名。
   representativeName           String?  // 代表者名: 企業の代表者情報。
-  postalCode                   String?  // 郵便番号: 企業の所在地の郵便番号。
   location                     String?  // 所在地: 企業の所在地（住所）。
   status                       String?  // ステータス: 企業の状態（例：営業中、解散等）。
   capitalStock                 BigInt?  // 資本金: 企業の財務規模を示す指標。
   employeeNumber               Int?     // 従業員数: 企業の規模を把握するための指標。
-  businessItems                String[] // 業種コード: 企業の事業内容を示すコードリスト。
-  businessSummary              String?  // 事業概要: 企業が行っている事業の概要。
+  businessSummary              String?  // 事業概要: 企業が行っている事業の概要。ない場合はgeminiで生成
   companyUrl                   String?  // 企業URL: 企業の公式ウェブサイトのURL。
   dateOfEstablishment          DateTime?// 設立日: 企業が設立された日付。
   averageContinuousServiceYears Float?  // 平均継続勤務年数: 従業員の平均勤務年数を示す。
   averageAge                   Float?   // 従業員の平均年齢: 職場の年齢構成を理解するための指標。
   femaleWorkersProportion      Float?   // 女性労働者の割合: 女性の雇用割合を示す。
   updateDate                   DateTime?// 更新日: 情報が最後に更新された日付。
-  workplaceInfo                WorkplaceInfo? 
+  interestedCount              Int @default(0)     // 興味があるリアクションの数のキャッシュ
+  internCount                  Int @default(0)     // インターン参加リアクションの数のキャッシュ
+  eventJoinCount               Int @default(0)     // イベント参加リアクションの数のキャッシュ
+
+  posts            Post[]
+  interns          Intern[]   // Internとのリレーション
+  interests        Interest[] // Interestとのリレーション
+  events           Event[]    // Eventとのリレーション
+
+  @@index([name])   
 }
 
-model WorkplaceInfo {
-  corporateNumber              String   @id  // 法人番号: Companyモデルとのリレーション用。
-  averageAge                   Float?   // 従業員の平均年齢。
-  averageContinuousServiceYears Float?  // 平均継続勤務年数。
-  averageContinuousServiceYearsFemale Float? // 女性従業員の平均継続勤務年数。
-  averageContinuousServiceYearsMale   Float? // 男性従業員の平均継続勤務年数。
-  monthAveragePredeterminedOvertimeHours Float? // 月平均所定外労働時間。
-  femaleWorkersProportionType  String?  // 女性労働者の割合のタイプ。
-  femaleShareOfManager         Float?   // 女性管理職の割合。
-  femaleShareOfOfficers        Float?   // 女性役員の割合。
-  genderTotalOfManager         Int?     // 管理職の総数。
-  genderTotalOfOfficers        Int?     // 役員の総数。
-  company                      Company  @relation(fields: [corporateNumber], references: [corporateNumber]) // Companyモデルとのリレーション。
+// 企業ごとにPostした投稿のテーブル
+model Post {
+  id          BigInt   @id @default(autoincrement()) // ID (BigInt)
+  user        User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId      String                              // UserテーブルのID
+  company     Company      @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  companyId   String                              // Companyテーブルの法人番号
+  title       String                              // 投稿のタイトル
+  content     String                              // 投稿の内容
+  createdAt   DateTime  @default(now())           // 作成日時
+  updatedAt   DateTime  @updatedAt                // 更新日時
+  likeCount   Int @default(0)                     // いいね数のキャッシュ
+
+  likes       Like[]    // Likeとのリレーション
+  postTags    PostTag[] // PostTagとのリレーション
+  comments   Comment[] // Commentとのリレーション
+
+  @@index([companyId])  
+  @@index([userId])   
 }
+
+// Postに対するlikeの中間テーブル
+model Like {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  post       Post      @relation(fields: [postId], references: [id]) // Postとのリレーション
+  postId     BigInt                              // PostテーブルのID
+
+  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+
+  @@unique([postId, userId])//各投稿へのいいね数制限
+
+  @@index([postId])
+  @@index([userId])
+}
+
+// Companyに対するinterestの中間テーブル
+model Interest {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Companyに対するinternの中間テーブル
+model Intern {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Companyに対するeventの中間テーブル
+model Event {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Tagの内容のテーブル
+model Tag {
+  id         Int    @id @default(autoincrement()) // ID (Int)
+  name       String   @unique // タグの名前
+  postTags PostTag[] // PostTagとのリレーション
+}
+
+model PostTag {
+  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade) // Postとのリレーション
+  postId  BigInt  // PostのID
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)  // Tagとのリレーション
+  tagId   Int     // TagのID
+
+  @@id([postId, tagId]) // 複合主キー
+}
+
+//Commentのテーブル
+model Comment {
+  id        BigInt   @id @default(autoincrement())
+  postId    BigInt
+  userId    String
+  content   String
+  parentId  BigInt?   // 親コメントID。NULLの場合はトップレベルコメント。
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([userId])
+}
+
+
+
+  
+
+
+
