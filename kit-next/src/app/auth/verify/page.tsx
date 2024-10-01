@@ -1,8 +1,18 @@
 "use client";
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import Footer from '@/components/common/Footer';
+import { getAuth, signOut } from 'firebase/auth';
 
 const Verify: React.FC = () => {
+  useEffect(() =>{
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      console.log('Signed out!');
+    }).catch((error) => {
+      console.error('Error signing out:', error);
+    });
+  });
   return (
     <div className="flex items-center justify-center min-h-screen text-gray-800 relative">
       <motion.div

@@ -41,11 +41,65 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
     setSelectedCompany(company);
     fetchCompanyDetails(company.corporate_number);
   };
+
   const closeModal = () => {
     setSelectedCompany(null);
     setCompanyDetails(null);
     setIsModalOpen(false); 
   };
+
+  const handleRegister = async () => {
+    if (!selectedCompany) return;
+  
+    try {
+      // /api/registerCompanyエンドポイントにPOSTリクエストを送信
+      const response = await axios.post('/api/registerCompany', {
+        corporateNumber: selectedCompany.corporate_number,
+        name: selectedCompany.name,
+        location: selectedCompany.location,
+        updateDate: selectedCompany.update_date,
+        kana: companyDetails[0].kana,
+        representativeName: companyDetails[0].representative_name,
+        employeeNumber: companyDetails[0].employee_number,
+        businessSummary: companyDetails[0].business_summary,
+        businessSummaryAi: companyDetails[0].business_summary_ai,
+        companyUrl: companyDetails[0].company_url,
+        dateOfEstablishment: companyDetails[0].date_of_establishment,
+        averageContinuousServiceYears: companyDetails[0].average_continuous_service_years,
+        averageAge: companyDetails[0].average_age,
+        averageSalaryAi: companyDetails[0].average_salary_ai,
+      });
+  
+      // 登録後の処理を検討
+      if (response.status === 201) {
+        alert('会社情報が正常に登録されました');
+      } else {
+        alert('会社情報の登録に失敗しました');
+      }
+    } catch (error:any) {
+      if (error.response) {
+        if (error.response.status === 409) {
+          // 既に登録されている場合
+          console.error('Company already registered:', error.response.data.error);
+          alert('この会社は既に登録されています。');
+        } else {
+          // その他のエラー
+          console.error('Error registering company:', error.response.data.error);
+          alert('会社情報の登録に失敗しました。');
+        }
+      } else {
+        // ネットワークエラーなど
+        console.error('Network error:', error);
+        alert('ネットワークエラーが発生しました。');
+      }
+    } finally {
+      // モーダルを閉じる
+      closeModal();
+    }
+  };
+
+
+  
 
   return (
     <div className="p-6">
@@ -95,6 +149,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
         onClose={closeModal}
         corporateNumber={selectedCompany?.corporate_number || ''}
         companyDetails={companyDetails}
+        onRegister={handleRegister}
       />
       )}
     </div>

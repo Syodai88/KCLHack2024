@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, sendEmailVerification, applyActionCode } from 'firebase/auth';
 import { auth } from './../plugins/firebase';
-import firebase from 'firebase/compat/app';
+import axios from 'axios';
 
 interface AuthContextProps {
   user: User | null;
@@ -98,7 +98,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAuthError(null);
     try{
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       await sendEmailVerification(userCredential.user);
+      const idToken = await user.getIdToken();
+
+    // バックエンドのAPIエンドポイントにユーザー情報を送信
+    await axios.post(
+      '/api/users', // APIエンドポイントのURL
+      {
+        id: user.uid,    // ユーザーID
+        email: user.email,
+        name: "未設定",   // デフォルト値（必要に応じて変更）
+        year: "不明",     // デフォルト値
+        department: "未設定", // デフォルト値
+        other: "",       // デフォルト値
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${idToken}`, // 認証トークンをヘッダーに追加
+        },
+      }
+    );
       router.push('/auth/verify');
     } catch (error: any){
         switch (error.code){
