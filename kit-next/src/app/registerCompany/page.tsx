@@ -15,7 +15,7 @@ type Company = {
   update_date: string;
 };
 
-const Home: React.FC = () => {
+const RegisterCompany: React.FC = () => {
   const [results, setResults] = useState<Company[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -57,4 +57,4 @@ const Home: React.FC = () => {
   );
 }
 
-export default Home;
+export default RegisterCompany;
