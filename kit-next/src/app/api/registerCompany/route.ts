@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const newCompany = await prisma.company.create({
       data: {
         corporateNumber: body.corporateNumber,
-        name: body.name,
+        name: body.name.normalize("NFKC"),
         kana: body.kana,
         representativeName: body.representativeName,
         location: body.location,
