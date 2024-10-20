@@ -85,7 +85,7 @@ const Home: React.FC = () => {
 
   const fetchCompanies = async (query: string) => {
     try {
-      const res = await fetch(`/api/fetchDbCompanyInfo?name=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/fetchDbCompaniesInfo?name=${encodeURIComponent(query)}`);
       const data = await res.json();
       setResults(data);  
     } catch (error) {
