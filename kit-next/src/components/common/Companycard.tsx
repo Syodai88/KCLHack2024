@@ -1,46 +1,163 @@
 import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, CardActions, Button, Grid } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useRouter } from 'next/navigation';
 
 interface CompanyCardProps {
+  userId: string;
   image: string;
   name: string;
   details: string;
+  companyId: string;
+  interestCount: number;
+  internCount: number;
+  eventJoinCount: number;
+  userInterest: boolean;
+  userIntern: boolean;
+  userEventJoin: boolean;
+
 }
 
-const CompanyCard: React.FC<CompanyCardProps> = ({ image, name, details }) => {
+const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details, companyId, interestCount, internCount, eventJoinCount }) => {
+  const router = useRouter();
+  const [currentInterestCount, setCurrentInterestCount] = React.useState(interestCount);
+  const [currentInternCount, setCurrentInternCount] = React.useState(internCount);
+  const [currentEventJoinCount, setCurrentEventJoinCount] = React.useState(eventJoinCount);
+  const [isInterested, setIsInterested] = React.useState(false);
+  const [isInterned, setIsInterned] = React.useState(false);
+  const [isEventJoined, setIsEventJoined] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchUserReactions = async () => {
+      try {
+        const response = await fetch('/api/fetchUserReactions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, companyId }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsInterested(data.isInterested);
+          setIsInterned(data.isInterned);
+          setIsEventJoined(data.isEventJoined);
+        } else {
+          console.error('Failed to fetch user reactions');
+        }
+      } catch (error) {
+        console.error('Error fetching user reactions:', error);
+      }
+    };
+
+    if (userId && companyId) {
+      fetchUserReactions();
+    }
+  }, [userId, companyId]);
+
+  const handleCardClick = () => {
+    router.push(`/companies/${companyId}`);
+  };
+
+  const handleReactionClick = async (actionType: string) => {
+    try {
+      const response = await fetch('/api/companyReaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ actionType, companyId, userId }),
+      });
+
+      if (response.ok) {
+        if (actionType === 'interest') {
+          if (isInterested) {
+            setCurrentInterestCount(currentInterestCount - 1);
+          } else {
+            setCurrentInterestCount(currentInterestCount + 1);
+          }
+          setIsInterested(!isInterested);
+        } else if (actionType === 'intern') {
+          if (isInterned) {
+            setCurrentInternCount(currentInternCount - 1);
+          } else {
+            setCurrentInternCount(currentInternCount + 1);
+          }
+          setIsInterned(!isInterned);
+        } else if (actionType === 'eventJoin') {
+          if (isEventJoined) {
+            setCurrentEventJoinCount(currentEventJoinCount - 1);
+          } else {
+            setCurrentEventJoinCount(currentEventJoinCount + 1);
+          }
+          setIsEventJoined(!isEventJoined);
+        }
+      } else {
+        console.error('Failed to update reaction');
+      }
+    } catch (error) {
+      console.error('Error updating reaction:', error);
+    }
+  };
+
   return (
-    <Card sx={{ display: 'flex', marginBottom: 2 }}>
+    <Card
+      sx={{
+        display: 'flex',
+        marginBottom: 2,
+        cursor: 'pointer',
+        transition: 'transform 0.3s',
+      }}
+    >
       <Grid container spacing={0}>
-        <Grid xs={2} sx={{justifyContent: 'center'}}>
+        <Grid item xs={2} sx={{ justifyContent: 'center' }}>
           <CardMedia
-          component="img"
-          //sx={{ width: 160 }}
-          image={image}
-          alt={name}
+            component="img"
+            image={image}
+            alt={name}
           />
         </Grid>
-        <Grid xs={10}>
-          <CardContent sx={{ flex: '1 0 auto' }}>
-          <Typography component="div" variant="h5" sx={{marginBottom: 2}}>
-            {name}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" component="div" sx={{marginBottom: 2}}>
-            {details}
-          </Typography>
+        <Grid item xs={10}>
+          <CardContent sx={{ flex: '1 0 auto' }} onClick={handleCardClick}>
+            <Typography component="div" variant="h5" sx={{ marginBottom: 2 }}>
+              {name}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ marginBottom: 2 }}>
+              {details}
+            </Typography>
           </CardContent>
           <Grid container spacing={0}>
-            <Grid xs={3}>
-              <CardActions sx={{marginLeft: 5, alignitems: 'center'}}>
-                <Button size="medium" variant="outlined">
+            <Grid item xs={3}>
+              <CardActions sx={{ marginLeft: 5, alignItems: 'center' }}>
+                <Button size="medium" variant="outlined" onClick={handleCardClick}>
                   詳しく見る
                 </Button>
               </CardActions>
             </Grid>
-            <Grid xs={9}>
-              <CardActions sx={{marginLeft: 5, alignitems: 'center'}}>
-                <Button startIcon={<FavoriteIcon />} size="medium" variant="outlined" >
-                  気になる
+            <Grid item xs={9}>
+              <CardActions sx={{ marginLeft: 5, alignItems: 'center' }}>
+                <Button
+                  startIcon={<FavoriteIcon />}
+                  size="medium"
+                  variant={isInterested ? 'contained' : 'outlined'}
+                  onClick={() => handleReactionClick('interest')}
+                >
+                  気になる ({currentInterestCount})
+                </Button>
+                <Button
+                  size="medium"
+                  variant={isInterned ? 'contained' : 'outlined'}
+                  onClick={() => handleReactionClick('intern')}
+                >
+                  インターン参加 ({currentInternCount})
+                </Button>
+                <Button
+                  size="medium"
+                  variant={isEventJoined ? 'contained' : 'outlined'}
+                  onClick={() => handleReactionClick('eventJoin')}
+                >
+                  イベント参加 ({currentEventJoinCount})
                 </Button>
               </CardActions>
             </Grid>
