@@ -75,19 +75,22 @@ const Content: React.FC = () => {
 };
 
 const Home: React.FC = () => {
-  interface Company  {
-    corporate_number: string;
-    name: string;
-    location: string;
-    status: string;
-    update_date: string;
-  }
   const [results, setResults] = useState<Company[]>([]);
+  const fetcCompanies = async () => {
+    try {
+      const res = await fetch('/api/popularCompany');
+      const data = await res.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Error fetching top companies:', error);
+      setResults([]);
+    }
+  };
   const fetchCompanies = async (query: string) => {
     try {
-      const res = await fetch(`/api/searchCompany?name=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/fetchDbCompanyInfo?name=${encodeURIComponent(query)}`);
       const data = await res.json();
-      setResults(data['hojin-infos'] || []); 
+      setResults(data); 
     } catch (error) {
       console.error('Error fetching companies:', error);
       setResults([]);
