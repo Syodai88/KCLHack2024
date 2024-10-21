@@ -63,7 +63,7 @@ model Post {
   id          BigInt   @id @default(autoincrement()) // ID (BigInt)
   user        User      @relation(fields: [userId], references: [id]) // Userとのリレーション
   userId      String                              // UserテーブルのID
-  company     Company      @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  company     Company      @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
   companyId   String                              // Companyテーブルの法人番号
   title       String                              // 投稿のタイトル
   content     String                              // 投稿の内容
@@ -97,27 +97,27 @@ model Like {
 // Companyに対するinterestの中間テーブル
 model Interest {
   id         BigInt    @id @default(autoincrement()) // ID (BigInt)
-  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
   companyId  String                              // Companyテーブルの法人番号
-  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
   userId     String                              // UserテーブルのID
 }
 
 // Companyに対するinternの中間テーブル
 model Intern {
   id         BigInt    @id @default(autoincrement()) // ID (BigInt)
-  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
   companyId  String                              // Companyテーブルの法人番号
-  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
   userId     String                              // UserテーブルのID
 }
 
 // Companyに対するeventの中間テーブル
 model Event {
   id         BigInt    @id @default(autoincrement()) // ID (BigInt)
-  company    Company   @relation(fields: [companyId], references: [corporateNumber]) // Companyとのリレーション
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
   companyId  String                              // Companyテーブルの法人番号
-  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
   userId     String                              // UserテーブルのID
 }
 

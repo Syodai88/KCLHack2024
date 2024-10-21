@@ -1,0 +1,124 @@
+.container {
+    font-family: 'Roboto', 'sans-serif';
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    color: #454545; /* accent 色を使用 */
+    background-color: #ffffff; /* コンテナの背景色を白に設定 */
+}
+
+.companyHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.companyLogo {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+    object-fit: contain;
+}
+
+.companyName {
+    font-size: 2.5em;
+    margin: 0;
+    color: #000; 
+}
+
+.companyInfo {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.infoItem h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #68C5F3; /* secondary 色を使用 */
+}
+
+.infoItem p {
+    margin: 0;
+    font-size: 1em;
+    color: #454545; /* accent 色を使用 */
+}
+
+.companyLink {
+    color: #64BCFC; /* primary 色を使用 */
+    text-decoration: none;
+}
+
+.companyLink:hover {
+    text-decoration: underline;
+    color: #4A9FE0; /* primary-dark 色を使用 */
+}
+
+.reactionButtons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.button {
+    background-color: #DFDFDF; /* background 色を使用 */
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+}
+
+.button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.button:hover {
+    transform: translateY(-2px); /* ボタンが浮き上がる効果 */
+}
+
+.interested {
+    background-color: #E74C3C; /* 赤色で興味ありボタンを強調 */
+}
+
+.interested:hover {
+    background-color: #C0392B; /* 濃い赤でホバー時の変化 */
+}
+
+.interned {
+    background-color: #3498DB; /* 青色でインターン参加ボタンを強調 */
+}
+
+.interned:hover {
+    background-color: #2980B9; /* 濃い青でホバー時の変化 */
+}
+
+.attendedEvent {
+    background-color: #28A745; /* イベント参加者ボタンの色を緑色に設定 */
+}
+
+.attendedEvent:hover {
+    background-color: #218838; /* 濃い緑でホバー時の変化 */
+}
+
+.postsSection h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #EAEAEA;
+    padding-bottom: 10px;
+    color: #454545; /* accent 色を使用 */
+}
+
+.error {
+    font-size: 1.2em;
+    color: #DC3545; /* error 色を使用 */
+    text-align: center;
+    margin-top: 50px;
+}
