@@ -41,11 +41,78 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
     setSelectedCompany(company);
     fetchCompanyDetails(company.corporate_number);
   };
+
   const closeModal = () => {
     setSelectedCompany(null);
     setCompanyDetails(null);
     setIsModalOpen(false); 
   };
+
+  const handleRegister = async () => {
+    if (!selectedCompany) return;
+    
+    try {
+      const generateResponse = await axios.post('/api/generateCompanyInfo', {
+        companyName: selectedCompany.name,
+      });
+      console.log(generateResponse);
+      if (generateResponse.status !== 200) {
+        alert('企業情報の生成に失敗しました');
+        return;
+      }
+  
+      // AIで生成された企業情報
+      const aiCompanyDetails = generateResponse.data;
+      console.log(aiCompanyDetails);
+  
+      // /api/registerCompanyエンドポイントにPOSTリクエストを送信
+      const response = await axios.post('/api/registerCompany', {
+        corporateNumber: selectedCompany.corporate_number,
+        name: selectedCompany.name,
+        location: selectedCompany.location,
+        updateDate: selectedCompany.update_date,
+        kana: companyDetails[0].kana,
+        representativeName: companyDetails[0].representative_name,
+        employeeNumber: companyDetails[0].employee_number,
+        businessSummary: companyDetails[0].business_summary,
+        businessSummaryAi: aiCompanyDetails.businessSummary,
+        companyUrl: companyDetails[0].company_url || aiCompanyDetails.companyUrl,
+        dateOfEstablishment: companyDetails[0].date_of_establishment || aiCompanyDetails.dateOfEstablishment,
+        averageContinuousServiceYears: companyDetails[0].average_continuous_service_years || aiCompanyDetails.averageContinuousServiceYears,
+        averageAge: companyDetails[0].average_age || aiCompanyDetails.averageAge,
+        averageSalaryAi: companyDetails[0].average_salary_ai || aiCompanyDetails.averageSalary,
+      });
+  
+      // 登録後の処理を検討、alertより登録中的な動き出したい
+      if (response.status === 201) {
+        alert('会社情報が正常に登録されました');
+      } else {
+        alert('会社情報の登録に失敗しました');
+      }
+    } catch (error:any) {
+      if (error.response) {
+        if (error.response.status === 409) {
+          // 既に登録されている場合
+          console.error('Company already registered:', error.response.data.error);
+          alert('この会社は既に登録されています。');
+        } else {
+          // その他のエラー
+          console.error('Error registering company:', error.response.data.error);
+          alert('会社情報の登録に失敗しました。');
+        }
+      } else {
+        // ネットワークエラーなど
+        console.error('Network error:', error);
+        alert('ネットワークエラーが発生しました。');
+      }
+    } finally {
+      // モーダルを閉じる
+      closeModal();
+    }
+  };
+
+
+  
 
   return (
     <div className="p-6">
@@ -95,6 +162,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
         onClose={closeModal}
         corporateNumber={selectedCompany?.corporate_number || ''}
         companyDetails={companyDetails}
+        onRegister={handleRegister}
       />
       )}
     </div>

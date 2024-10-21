@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import SearchForm from '../../components/search/searchForm';
+import SearchForm from '../../components/registercompany/searchForm';
 import SplitPage from '../../components/common/SplitPage';
-import ResultsTable from '@/components/search/ResultsTable';
+import ResultsTable from '@/components/registercompany/ResultsTable';
+import Sidebar from '@/components/common/Sidebar';
 
 
 type Company = {
@@ -14,7 +15,7 @@ type Company = {
   update_date: string;
 };
 
-const Home: React.FC = () => {
+const RegisterCompany: React.FC = () => {
   const [results, setResults] = useState<Company[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -40,7 +41,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <SplitPage sidebar={<p className="text-black">Sidebar Content</p>}>
+    <SplitPage sidebar={<Sidebar/>}>
       <div className="space-y-6">
         <SearchForm onSearch={fetchCompanies} />
         {results &&(
@@ -56,4 +57,4 @@ const Home: React.FC = () => {
   );
 }
 
-export default Home;
+export default RegisterCompany;

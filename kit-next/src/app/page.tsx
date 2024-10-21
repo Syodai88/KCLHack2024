@@ -1,11 +1,18 @@
-// Home.tsx
 "use client";
 import { motion } from 'framer-motion';
-import SplitPage from '@/components/common/SplitPage';
-import Sidebar from '@/components/common/Sidebar';
+import { useEffect } from 'react';
+import { getAuth, signOut } from 'firebase/auth';
 import Footer from '@/components/common/Footer';
 
 const Welcome: React.FC = () => {
+  useEffect(() =>{
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      console.log('Signed out!');
+    }).catch((error) => {
+      console.error('Error signing out:', error);
+    });
+  });
   return (
     <>
       <motion.div

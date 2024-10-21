@@ -16,14 +16,13 @@ const Sidebar: React.FC = () => {
     return (
         <div className="p-5 bg-white h-full overflow-y-auto">
             <div className="mb-5 cursor-pointer" onClick={handleAvatarClick}>
-                {/* ここでアイコンのサイズを調整 */}
                 <Avatar style={{ width: 70, height: 70 }}>
                     <RxAvatar size={50} />
                 </Avatar>
             </div>
             <Link href="/post-page" className="block text-blue-500 no-underline my-2">感想投稿ページ</Link>
-            <Link href="/search-page" className="block text-blue-500 no-underline my-2">企業検索ページ</Link>
-            <Link href="/register-page" className="block text-blue-500 no-underline my-2">企業登録ページ</Link>
+            <Link href="/home" className="block text-blue-500 no-underline my-2">企業検索ページ</Link>
+            <Link href="/registerCompany" className="block text-blue-500 no-underline my-2">企業登録ページ</Link>
             <Link href="/details-page" className="block text-blue-500 no-underline my-2">感想詳細ページ</Link>
         </div>
     );
