@@ -56,7 +56,7 @@ const Mypage_edit: React.FC = () => {
             {isEditing ? (
                 <div className="w-full max-w-md">
                     <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">ハンドルネーム</label>
+                        <label className="block text-sm font-bold mb-2">ニックネーム</label>
                         <input
                             type="text"
                             name="handleName"
@@ -103,7 +103,7 @@ const Mypage_edit: React.FC = () => {
                 </div>
             ) : (
                 <div className="text-center space-y-2">
-                    <p className="text-xl font-bold">ハンドルネーム: {profile.handleName}</p>
+                    <p className="text-xl font-bold">ニックネーム: {profile.handleName}</p>
                     <p>学年: {profile.year}</p>
                     <p>学科: {profile.department}</p>
                     <p>資格: {profile.certifications}</p>

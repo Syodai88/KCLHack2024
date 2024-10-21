@@ -28,13 +28,5 @@ const Welcome: React.FC = () => {
   );
 }
 
-const Home: React.FC = () => {
-  return (
-    <SplitPage sidebar={<Sidebar />}>
-      <Welcome />
-    </SplitPage>
-  );
-}
-
-export default Home;
+export default Welcome;
 
