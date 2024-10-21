@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, CardActions, Button, Grid } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 interface CompanyCardProps {
   userId: string;
@@ -20,14 +21,14 @@ interface CompanyCardProps {
 
 const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details, companyId, interestCount, internCount, eventJoinCount }) => {
   const router = useRouter();
-  const [currentInterestCount, setCurrentInterestCount] = React.useState(interestCount);
-  const [currentInternCount, setCurrentInternCount] = React.useState(internCount);
-  const [currentEventJoinCount, setCurrentEventJoinCount] = React.useState(eventJoinCount);
-  const [isInterested, setIsInterested] = React.useState(false);
-  const [isInterned, setIsInterned] = React.useState(false);
-  const [isEventJoined, setIsEventJoined] = React.useState(false);
+  const [currentInterestCount, setCurrentInterestCount] = useState(interestCount);
+  const [currentInternCount, setCurrentInternCount] = useState(internCount);
+  const [currentEventJoinCount, setCurrentEventJoinCount] = useState(eventJoinCount);
+  const [isInterested, setIsInterested] = useState(false);
+  const [isInterned, setIsInterned] = useState(false);
+  const [isEventJoined, setIsEventJoined] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUserReactions = async () => {
       try {
         const response = await fetch('/api/fetchUserReactions', {
@@ -35,7 +36,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId, companyId }),
+          body: JSON.stringify({ userId:userId, companyId:companyId }),
         });
 
         if (response.ok) {
@@ -67,31 +68,19 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ actionType, companyId, userId }),
+        body: JSON.stringify({ actionType:actionType, companyId:companyId, userId:userId }),
       });
-
+  
       if (response.ok) {
         if (actionType === 'interest') {
-          if (isInterested) {
-            setCurrentInterestCount(currentInterestCount - 1);
-          } else {
-            setCurrentInterestCount(currentInterestCount + 1);
-          }
-          setIsInterested(!isInterested);
+          setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
+          setIsInterested((prev) => !prev);
         } else if (actionType === 'intern') {
-          if (isInterned) {
-            setCurrentInternCount(currentInternCount - 1);
-          } else {
-            setCurrentInternCount(currentInternCount + 1);
-          }
-          setIsInterned(!isInterned);
+          setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
+          setIsInterned((prev) => !prev);
         } else if (actionType === 'eventJoin') {
-          if (isEventJoined) {
-            setCurrentEventJoinCount(currentEventJoinCount - 1);
-          } else {
-            setCurrentEventJoinCount(currentEventJoinCount + 1);
-          }
-          setIsEventJoined(!isEventJoined);
+          setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
+          setIsEventJoined((prev) => !prev);
         }
       } else {
         console.error('Failed to update reaction');
