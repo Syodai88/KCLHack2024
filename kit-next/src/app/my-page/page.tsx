@@ -11,10 +11,11 @@ const Mypage_edit: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [profile, setProfile] = useState({
         handleName: "九工太郎",
-        year: "3年生",
-        department: "情報工学科",
-        certifications: "TOEIC 800点, 基本情報技術者試験"
+        year: "4年生",
+        department: "知能情報工学科",
+        certifications: "TOEIC 600点, 基本情報技術者試験"
     });
+    const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像
 
     // フォームの値変更を管理
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -22,12 +23,33 @@ const Mypage_edit: React.FC = () => {
         setProfile(prev => ({ ...prev, [name]: value }));
     };
 
+    // 画像を選択する関数
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const imageURL = URL.createObjectURL(e.target.files[0]);
+            setSelectedImage(imageURL); // 選択された画像をセット
+        }
+    };
+
     return (
         <div className="flex flex-col items-center">
             <div className="mb-5 cursor-pointer" style={{ paddingTop: '20px' }}>
-                <Avatar style={{ width: 120, height: 120 }}> {/* Avatarのサイズを調整 */}
-                    <RxAvatar size={80} /> {/* RxAvatarのサイズも調整 */}
-                </Avatar>
+                <label htmlFor="imageUpload">
+                    <Avatar style={{ width: 120, height: 120 }}> 
+                        {selectedImage ? (
+                            <img src={selectedImage} alt="選択された画像" style={{ width: '100%', height: '100%' }} />
+                        ) : (
+                            <RxAvatar size={80} />  // デフォルトアイコンの表示
+                        )}
+                    </Avatar>
+                </label>
+                <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }} // 非表示にしてクリックをアイコンに委譲
+                    onChange={handleImageChange}
+                />
             </div>
 
             {/* 編集モードかどうかで表示を切り替え*/}
