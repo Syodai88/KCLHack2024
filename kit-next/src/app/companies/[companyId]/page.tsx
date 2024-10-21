@@ -15,8 +15,9 @@ interface Company {
   location: string | null;
   employeeNumber: number | null;
   businessSummary: string | null;
+  businessSummaryAi: string | null;
   companyUrl: string | null;
-  averageIncome: string | null;
+  averageSalaryAi: string | null;
   averageAge: number | null;
   averageContinuousServiceYears: number | null;
   interestedCount: number;
@@ -138,6 +139,10 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
           <h2>事業概要</h2>
           <p>{company.businessSummary || '情報がありません'}</p>
         </div>
+        <div className={styles.infoItem}>
+          <h2>事業概要（生成AIによる情報）</h2>
+          <p>{company.businessSummaryAi || '情報がありません'}</p>
+        </div>
         {company.companyUrl && (
           <div className={styles.infoItem}>
             <h2>公式サイト</h2>
@@ -149,15 +154,15 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
           </div>
         )}
         <div className={styles.infoItem}>
-          <h2>平均収入</h2>
-          <p>{company.averageIncome || '情報がありません'}</p>
+          <h2>平均収入（生成AI）</h2>
+          <p>{company.averageSalaryAi || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
-          <h2>平均年齢</h2>
+          <h2>平均年齢（生成AI）</h2>
           <p>{company.averageAge ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
-          <h2>平均勤続年数</h2>
+          <h2>平均勤続年数（生成AI）</h2>
           <p>{company.averageContinuousServiceYears ?? '情報がありません'}</p>
         </div>
       </div>
