@@ -1,14 +1,13 @@
-/* Mypage.module.css */
-
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  
 }
 
 .avatarContainer {
   margin-bottom: 20px;
-  cursor: pointer;
   padding-top: 20px;
 }
 
@@ -24,6 +23,13 @@
 
 .formGroup {
   margin-bottom: 16px;
+}
+
+.cropContainer {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .label {

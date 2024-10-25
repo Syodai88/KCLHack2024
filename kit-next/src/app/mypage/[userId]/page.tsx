@@ -6,28 +6,31 @@ import Sidebar from '@/components/common/Sidebar';
 import { useParams } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import { RxAvatar } from "react-icons/rx";
-import Image from 'next/image';
 import styles from './Mypage.module.css';
+import ImageCropper from '@/components/Mypage/ImageCropper';
 
 interface Profile {
   name: string;
   year: string;
   department: string;
   other: string;
-  profileImage?: string;
+  profileImage: string;
 }
 
 const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [profile, setProfile] = useState<Profile>({
     name: "",
     year: "",
     department: "",
     other: "",
+    profileImage: "",
   });
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [faculty, setFaculty] = useState("");
-  const [department, setDepartment] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [faculty, setFaculty] = useState<string>("");
+  const [department, setDepartment] = useState<string>("");
+  const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
+  const [isImageEditing, setIsImageEditing] = useState<boolean>(false);
 
   // 学部/府の選択肢
   const faculties = [
@@ -37,7 +40,6 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
     { value: '情報工学府', label: '情報工学府' },
     { value: '生命体工学研究科', label: '生命体工学研究科' },
   ];
-
   // 学部/府ごとの学科/専攻の選択肢
   const departments: { [key: string]: { value: string; label: string }[] } = {
     '工学部': [
@@ -77,7 +79,6 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
       { value: '博士後期課程 生命体工学専攻', label: '博士後期課程 生命体工学専攻' },
     ],
   };
-
   // 学年の選択肢
   const years = [
     'B1', 'B2', 'B3', 'B4',
@@ -88,7 +89,7 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
 
   // ユーザーデータを取得
   useEffect(() => {
-    const fetchUserData = async () => {
+    const getUserData = async () => {
       try {
         const response = await fetch(`/api/getUserProfile?userId=${userId}`);
         if (response.ok) {
@@ -98,8 +99,10 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
             year: data.year,
             department: data.department,
             other: data.other,
+            profileImage: data.profileImage, // 画像のURL
+            //設定後に画像のURLも保存
           });
-          setSelectedImage(data.profileImage || null);
+          setSelectedImage(data.profileImage);
           // departmentを学部/府と学科/専攻に分割
           if (data.department) {
             const splitIndex = data.department.indexOf(" ");
@@ -118,7 +121,7 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
         console.error("ユーザーデータの取得中にエラーが発生しました:", error);
       }
     };
-    fetchUserData();
+    getUserData();
   }, [userId]);
 
   // フォームの値変更を管理
@@ -131,14 +134,6 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
       setDepartment(""); // 学部/府が変わったら学科/専攻をリセット
     } else if (name === "department") {
       setDepartment(value);
-    }
-  };
-
-  // 画像を選択する関数
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const imageURL = URL.createObjectURL(e.target.files[0]);
-      setSelectedImage(imageURL);
     }
   };
 
@@ -158,10 +153,10 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
         body: JSON.stringify({
           userId,
           profile: updatedProfile,
-          profileImage: selectedImage,
         }),
       });
       if (response.ok) {
+        setIsImageEditing(false);
         setIsEditing(false);
         setProfile(updatedProfile);
       } else {
@@ -171,7 +166,6 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
       console.error("プロフィールの更新中にエラーが発生しました:", error);
     }
   };
-
 
   // 卒業年度の計算
   const calculateGraduationYear = (year: string): string => {
@@ -205,128 +199,127 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
     return departments[faculty] || [];
   };
 
+   // 画像クロップ後の処理
+   const handleImageCropped = (croppedImageUrl: string, croppedImageFile: File) => {
+    setSelectedImage(croppedImageUrl); // クロップ後の画像を反映
+    setIsImageEditing(false); // 画像編集モードを終了
+    setCroppedImageFile(croppedImageFile);
+   }
+
   return (
     <div className={styles.container}>
-      <div className={styles.avatarContainer}>
-        <label htmlFor="imageUpload">
-          <Avatar className={styles.avatar}>
-            {selectedImage ? (
-              <img src={selectedImage} alt="選択された画像" style={{ width: '100%', height: '100%' }} />
-            ) : (
-              <RxAvatar size={80} />
-            )}
-          </Avatar>
-        </label>
-        <input
-          id="imageUpload"
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleImageChange}
-        />
-      </div>
-
-      {isEditing ? (
-        <div className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>ニックネーム</label>
-            <input
-              type="text"
-              name="name"
-              value={profile.name}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>学年</label>
-            <select
-              name="year"
-              value={profile.year}
-              onChange={handleInputChange}
-              className={styles.select}
-            >
-              <option value="">選択してください</option>
-              {years.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>学部/府</label>
-            <select
-              name="faculty"
-              value={faculty}
-              onChange={handleInputChange}
-              className={styles.select}
-            >
-              <option value="">選択してください</option>
-              {faculties.map(facultyOption => (
-                <option key={facultyOption.value} value={facultyOption.value}>{facultyOption.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>学科/専攻</label>
-            <select
-              name="department"
-              value={department}
-              onChange={handleInputChange}
-              className={styles.select}
-              disabled={!faculty}
-            >
-              <option value="">選択してください</option>
-              {getDepartmentsByFaculty(faculty).map(dept => (
-                <option key={dept.value} value={dept.value}>{dept.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>資格など</label>
-            <textarea
-              name="other"
-              value={profile.other}
-              onChange={handleInputChange}
-              className={styles.textarea}
-            />
-          </div>
-          <button className={styles.button} onClick={handleSave}>
-            保存
-          </button>
+        <div className={styles.avatarContainer}>
+            <Avatar className={styles.avatar}>
+                <img src={selectedImage} alt="プロフィール画像" className={styles.avatarImage} />
+            </Avatar>
         </div>
-      ) : (
-        <div className={styles.profileInfo}>
-          <p className={styles.profileItem}><strong>ニックネーム:</strong> {profile.name}</p>
-          <p className={styles.profileItem}><strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}</p>
-          <p className={styles.profileItem}><strong>所属:</strong> {profile.department}</p>
-          <p className={styles.profileItem}><strong>資格:</strong> {profile.other}</p>
-          <button className={styles.editButton} onClick={() => setIsEditing(true)}>
-            編集
-          </button>
-        </div>
-      )}
+        {isEditing ? (
+            <div className={styles.form}>
+                <div className={styles.formGroup}>
+                    <div className={styles.cropContainer}>
+                        <ImageCropper
+                        initialImageUrl={selectedImage || '/default-avatar.png'}
+                        onImageCropped={handleImageCropped}
+                        />
+                    </div>
+                    <label className={styles.label}>ニックネーム</label>
+                    <input
+                        type="text"
+                        name="name"
+                        value={profile.name}
+                        onChange={handleInputChange}
+                        className={styles.input}
+                    />
+                </div>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>学年</label>
+                    <select
+                        name="year"
+                        value={profile.year}
+                        onChange={handleInputChange}
+                        className={styles.select}
+                    >
+                        <option value="">選択してください</option>
+                        {years.map(year => (
+                        <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>学部/府</label>
+                    <select
+                        name="faculty"
+                        value={faculty}
+                        onChange={handleInputChange}
+                        className={styles.select}
+                    >
+                        <option value="">選択してください</option>
+                        {faculties.map(facultyOption => (
+                        <option key={facultyOption.value} value={facultyOption.value}>{facultyOption.label}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>学科/専攻</label>
+                    <select
+                        name="department"
+                        value={department}
+                        onChange={handleInputChange}
+                        className={styles.select}
+                        disabled={!faculty}
+                    >
+                        <option value="">選択してください</option>
+                        {getDepartmentsByFaculty(faculty).map(dept => (
+                        <option key={dept.value} value={dept.value}>{dept.label}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>資格など</label>
+                    <textarea
+                        name="other"
+                        value={profile.other}
+                        onChange={handleInputChange}
+                        className={styles.textarea}
+                    />
+                </div>
+                <button className={styles.button} onClick={handleSave}>
+                    保存
+                </button>
+            </div>
+        ) : (
+            <div className={styles.profileInfo}>
+                <p className={styles.profileItem}><strong>ニックネーム:</strong> {profile.name}</p>
+                <p className={styles.profileItem}><strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}</p>
+                <p className={styles.profileItem}><strong>所属:</strong> {profile.department}</p>
+                <p className={styles.profileItem}><strong>資格:</strong> {profile.other}</p>
+                <button className={styles.editButton} onClick={() => {setIsEditing(true),setIsImageEditing(true)}}>
+                    編集
+                </button>
+            </div>
+        )}
     </div>
-  );
+);
 };
 
 const Mypage: React.FC = () => {
-  const params = useParams();
-  let userId = params?.userId;
+const params = useParams();
+let userId = params?.userId;
 
-  // userIdが配列の場合、最初の要素を使用
-  if (Array.isArray(userId)) {
-    userId = userId[0];
-  }
+// userIdが配列の場合、最初の要素を使用
+if (Array.isArray(userId)) {
+  userId = userId[0];
+}
 
-  if (!userId) {
-    return <div>ユーザーIDが指定されていません</div>;
-  }
+if (!userId) {
+  return <div>ユーザーIDが指定されていません</div>;
+}
 
-  return (
-    <SplitPage sidebar={<Sidebar />}>
-      <MypageEdit userId={userId} />
-    </SplitPage>
-  );
+return (
+  <SplitPage sidebar={<Sidebar />}>
+    <MypageEdit userId={userId} />
+  </SplitPage>
+);
 };
 
 export default Mypage;
