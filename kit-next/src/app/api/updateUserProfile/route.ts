@@ -1,4 +1,3 @@
-// /pages/api/updateUserProfile.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -10,17 +9,17 @@ export async function POST(req: Request) {
     if (!userId || !profile) {
       return NextResponse.json({ error: 'userId and profile are required' }, { status: 400 });
     }
-
+    
     const updatedUser = await prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        name: profile.handleName,
+        name: profile.name,
         year: profile.year,
         department: profile.department,
         other: profile.other,
-        profileImage: profile.profileImage, // 画像のURLを更新
+        profileImage: profile.profileImage, 
       },
     });
 
