@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         year: profile.year,
         department: profile.department,
         other: profile.other,
+        profileImage: profile.profileImage, // 画像のURLを更新
       },
     });
 
