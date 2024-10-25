@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma'; 
-import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-
-// Firebase Admin SDKの初期化（環境変数を使用）
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
-}
+import { prisma } from '@/lib/prisma'; 
+import { adminAuth } from '@/plugins/firebaseAdmin';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -27,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // IDトークンを検証
-    const decodedToken = await getAuth().verifyIdToken(idToken);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
 
     // リクエストのユーザーIDと一致するか確認
