@@ -4,13 +4,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import { RxAvatar } from "react-icons/rx";
+import { useAuth } from '@/context/AuthContext';
 
 const Sidebar: React.FC = () => {
     const router = useRouter();
+    const { user } = useAuth();
 
     // アイコンクリック時のハンドラー
     const handleAvatarClick = () => {
-        router.push('/my-page');
+        if (user) {
+            router.push(`/mypage/${user.uid}`);
+        } else {
+            router.push('/login');
+        }
     };
 
     return (

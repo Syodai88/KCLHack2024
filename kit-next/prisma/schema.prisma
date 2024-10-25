@@ -21,6 +21,8 @@ model User{
   year              String   // 学年（B1~B4、M1~M2、D1~D3から選択）
   department        String   // 学科
   other             String?   //任意の情報(null可)
+  profileImage      String?   //画像のURL
+
 
   posts     Post[]     // Postとのリレーション
   likes     Like[]     // Likeとのリレーション

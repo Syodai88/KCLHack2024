@@ -1,0 +1,88 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.avatarContainer {
+  margin-bottom: 20px;
+  padding-top: 20px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+}
+
+.form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.cropContainer {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+  background-color: #fff;
+}
+
+.button {
+  padding: 10px 16px;
+  background-color: #48bb78;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #38a169;
+}
+
+.profileInfo {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.profileItem {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.editButton {
+  margin-top: 24px;
+  padding: 10px 16px;
+  background-color: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editButton:hover {
+  background-color: #2c5282;
+}
