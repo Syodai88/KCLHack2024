@@ -1,5 +1,4 @@
-// src/app/api/uploadImageToFirebase/route.ts
-import { adminStorage } from "@/plugins/firebaseAdomin";
+import { adminStorage } from "@/plugins/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
