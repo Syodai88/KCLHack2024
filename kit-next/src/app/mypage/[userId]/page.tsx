@@ -1,5 +1,10 @@
 // Mypage.tsx
 "use client";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css'; // KaTeXのCSSだけをインポート
 import React, { useState, useEffect } from 'react';
 import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
@@ -8,6 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import styles from './Mypage.module.css';
 import ImageCropper from '@/components/Mypage/ImageCropper';
 import { useAuth } from '@/context/AuthContext';
+
 
 interface Profile {
     name: string;
@@ -320,7 +326,14 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
                     <p className={styles.profileItem}><strong>ニックネーム:</strong> {profile.name}</p>
                     <p className={styles.profileItem}><strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}</p>
                     <p className={styles.profileItem}><strong>所属:</strong> {profile.department}</p>
-                    <p className={styles.profileItem}><strong>資格:</strong> {profile.other}</p>
+                    <strong>資格:</strong>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                        className={styles.markdown}
+                    >
+                        {profile.other || ""}
+                    </ReactMarkdown>
                     {loggedInUserId === userId && (
                         <button className={styles.editButton} onClick={() => setIsEditing(true)}>
                             編集
