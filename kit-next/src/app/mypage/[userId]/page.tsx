@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import styles from './Mypage.module.css';
 import ImageCropper from '@/components/Mypage/ImageCropper';
+import { useAuth } from '@/context/AuthContext';
 
 interface Profile {
     name: string;
@@ -29,6 +30,7 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
     const [faculty, setFaculty] = useState<string>("");
     const [department, setDepartment] = useState<string>("");
     const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
+    const loggedInUserId = useAuth().user?.uid;
     
     // 学部/府の選択肢
     const faculties = [
@@ -319,9 +321,11 @@ const MypageEdit: React.FC<{ userId: string }> = ({ userId }) => {
                     <p className={styles.profileItem}><strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}</p>
                     <p className={styles.profileItem}><strong>所属:</strong> {profile.department}</p>
                     <p className={styles.profileItem}><strong>資格:</strong> {profile.other}</p>
-                    <button className={styles.editButton} onClick={() => setIsEditing(true)}>
-                        編集
-                    </button>
+                    {loggedInUserId === userId && (
+                        <button className={styles.editButton} onClick={() => setIsEditing(true)}>
+                            編集
+                        </button>
+                    )}
                 </div>
             )}
         </div>
