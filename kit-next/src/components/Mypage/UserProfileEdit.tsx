@@ -97,6 +97,10 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === "name" || name === "year" || name === "other") {
+            if (name === "other" && value.length > 200) {
+                alert("資格などの入力は最大200文字までです。");
+                return;
+            }
             setProfile(prev => ({ ...prev, [name]: value }));
         } else if (name === "faculty") {
             setFaculty(value);
