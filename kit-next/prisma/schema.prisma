@@ -36,18 +36,20 @@ model User{
 model Company {
   corporateNumber              String   @id @unique  // 法人番号: 企業の一意の識別子。
   name                         String   // 企業名: 企業を識別するための基本情報。
-  kana                         String?  // 企業名のフリガナ: 企業名の読み仮名。
   representativeName           String?  // 代表者名: 企業の代表者情報。
   location                     String?  // 所在地: 企業の所在地（住所）。
   employeeNumber               Int?     // 従業員数: 企業の規模を把握するための指標。
+  employeeNumberAi             Int?     // AIで生成した従業員数
   businessSummary              String?  // 事業概要: 企業が行っている事業の概要。
-  businessSummaryAi            String?   // AIで生成した事業概要: 企業が行っている事業の概要をgeminiで生成
+  businessSummaryAi            String?  // AIで生成した事業概要: 企業が行っている事業の概要をgeminiで生成
+  keyMessageAi                 String?  // AIで生成したkeyMessage
   companyUrl                   String?  // 企業URL: 企業の公式ウェブサイトのURL。
   dateOfEstablishment          DateTime?// 設立日: 企業が設立された日付。
-  averageContinuousServiceYears Float?  // 平均継続勤務年数: 従業員の平均勤務年数を示す。
-  averageAge                   Float?   // 従業員の平均年齢: 職場の年齢構成を理解するための指標。
+  averageContinuousServiceYearsAi Float?  // 平均継続勤務年数: 従業員の平均勤務年数を示す。
+  averageAgeAi                   Float?   // 従業員の平均年齢: 職場の年齢構成を理解するための指標。
   averageSalaryAi              String?  //新卒の平均給料(Geminiの生成でx万形式)
   updateDate                   DateTime?// 更新日: 情報が最後に更新された日付。
+  
   interestedCount              Int @default(0)     // 興味があるリアクションの数のキャッシュ
   internCount                  Int @default(0)     // インターン参加リアクションの数のキャッシュ
   eventJoinCount               Int @default(0)     // イベント参加リアクションの数のキャッシュ

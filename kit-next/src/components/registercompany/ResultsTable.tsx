@@ -63,24 +63,24 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
   
       // AIで生成された企業情報
       const aiCompanyDetails = generateResponse.data;
-      console.log(aiCompanyDetails);
   
       // /api/registerCompanyエンドポイントにPOSTリクエストを送信
       const response = await axios.post('/api/registerCompany', {
         corporateNumber: selectedCompany.corporate_number,
         name: selectedCompany.name,
         location: selectedCompany.location,
-        updateDate: selectedCompany.update_date,
-        kana: companyDetails[0].kana,
         representativeName: companyDetails[0].representative_name,
-        employeeNumber: companyDetails[0].employee_number,
+        employeeNumber: companyDetails[0].employee_numbe,
+        employeeNumberAi: aiCompanyDetails.employeeNumber,
         businessSummary: companyDetails[0].business_summary,
         businessSummaryAi: aiCompanyDetails.businessSummary,
+        keyMessageAi : aiCompanyDetails.keyMessage,
         companyUrl: companyDetails[0].company_url || aiCompanyDetails.companyUrl,
         dateOfEstablishment: companyDetails[0].date_of_establishment || aiCompanyDetails.dateOfEstablishment,
-        averageContinuousServiceYears: companyDetails[0].average_continuous_service_years || aiCompanyDetails.averageContinuousServiceYears,
-        averageAge: companyDetails[0].average_age || aiCompanyDetails.averageAge,
-        averageSalaryAi: companyDetails[0].average_salary_ai || aiCompanyDetails.averageSalary,
+        averageContinuousServiceYearsAi: companyDetails[0].average_continuous_service_years || aiCompanyDetails.averageContinuousServiceYears,
+        averageAgeAi: aiCompanyDetails.averageAge,
+        averageSalaryAi: aiCompanyDetails.averageSalary,
+        updateDate: selectedCompany.update_date,
       });
   
       // 登録後の処理を検討、alertより登録中的な動き出したい
