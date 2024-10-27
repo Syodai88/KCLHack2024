@@ -1,9 +1,11 @@
+/* module.css */
+
+/* コンテナ関連 */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
 }
 
 .avatarContainer {
@@ -18,7 +20,7 @@
 
 .form {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
 }
 
 .formGroup {
@@ -36,7 +38,7 @@
   display: block;
   font-weight: bold;
   margin-bottom: 4px;
-  color: #333;
+  color: #000000; /* 色を黒に設定 */
 }
 
 .input,
@@ -46,8 +48,12 @@
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  color: #333;
+  color: #000000; /* 色を黒に設定 */
   background-color: #fff;
+}
+
+.textarea {
+  height: 150px; /* 高さを指定してtextareaを大きくする */
 }
 
 .button {
@@ -71,6 +77,7 @@
 .profileItem {
   margin-bottom: 8px;
   font-size: 16px;
+  color: #000000; /* 色を黒に設定 */
 }
 
 .editButton {
@@ -85,4 +92,105 @@
 
 .editButton:hover {
   background-color: #2c5282;
+}
+
+/* Markdownスタイル */
+.markdown {
+  color: #000000; 
+}
+
+.markdown h1 {
+  font-size: 2em;
+}
+
+.markdown h2 {
+  font-size: 1.5em;
+}
+
+.markdown h3 {
+  font-size: 1.2em;
+}
+
+.markdown p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.markdown li {
+  margin-bottom: 0.5em;
+  line-height: 1.6;
+}
+
+.markdown ul {
+  list-style-type: disc;
+}
+
+.markdown ol {
+  list-style-type: decimal;
+}
+
+.markdown ul ul,
+.markdown ol ul,
+.markdown ul ol,
+.markdown ol ol {
+  margin-left: 1em;
+}
+
+.markdown a {
+  color: #64BCFC; /* リンクの色をprimaryに設定 */
+  text-decoration: none;
+}
+
+.markdown a:hover {
+  text-decoration: underline;
+  color: #000000; 
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+}
+
+.markdown blockquote {
+  border-left: 4px solid #000000; 
+  background-color: #f0f4f8;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  color: #555555;
+  font-style: italic;
+}
+
+.markdown pre {
+  background-color: #f5f5f5;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid #000000; /* テーブルの境界線を黒に設定 */
+  padding: 0.75em;
+  text-align: left;
+}
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid #000000; /* 水平線の色を黒に設定 */
+  margin: 2em 0;
 }
