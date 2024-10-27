@@ -20,7 +20,7 @@
 
 .form {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
 }
 
 .formGroup {
@@ -50,6 +50,10 @@
   border-radius: 4px;
   color: #000000; /* 色を黒に設定 */
   background-color: #fff;
+}
+
+.textarea {
+  height: 150px; /* 高さを指定してtextareaを大きくする */
 }
 
 .button {
