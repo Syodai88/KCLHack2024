@@ -25,6 +25,7 @@ export async function POST(req: Request) {
   "kana": "String",         // 企業名のふりがな。
   "employeeNumber": "Int",  // 従業員数。
   "businessSummary": "String", // 事業概要（2~3行で要点をまとめる。加えて就職する大学生に対してどのような人がおすすめかアドバイスする）。
+  "keyMessage": "String",   // 企業の特徴や魅力を伝える簡単なメッセージ。
   "companyUrl": "String",   // 公式ウェブサイトのURL。
   "dateOfEstablishment": "ISO 8601 日付形式", // 設立日。
   "averageContinuousServiceYears": "Float", // 平均継続勤務年数。
