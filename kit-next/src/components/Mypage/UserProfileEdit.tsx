@@ -169,6 +169,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     };
 
     const handleImageCropped = (croppedImageUrl: string, croppedImageFile: File) => {
+        setProfile(prev => ({ ...prev, profileImage: croppedImageUrl }));
         setSelectedImage(croppedImageUrl);
         setCroppedImageFile(croppedImageFile);
     };
