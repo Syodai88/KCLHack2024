@@ -8,26 +8,11 @@ import styles from './CompanyPage.module.css';
 import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import { useAuth } from '@/context/AuthContext';
+import type { Company } from '@/interface/interface';
 
-interface Company {
-  corporateNumber: string;
-  name: string;
-  location: string | null;
-  employeeNumber: number | null;
-  businessSummary: string | null;
-  businessSummaryAi: string | null;
-  companyUrl: string | null;
-  averageSalaryAi: string | null;
-  averageAge: number | null;
-  averageContinuousServiceYears: number | null;
-  interestedCount: number;
-  internCount: number;
-  eventJoinCount: number;
-}
 
 const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
   const { user } = useAuth();
-
   const [company, setCompany] = useState<Company | null>(null);
   const [isInterested, setIsInterested] = useState(false);
   const [isInterned, setIsInterned] = useState(false);
@@ -133,7 +118,7 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
         </div>
         <div className={styles.infoItem}>
           <h2>従業員数</h2>
-          <p>{company.employeeNumber ?? '情報がありません'}</p>
+          <p>{company.employeeNumberAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>事業概要</h2>
@@ -159,11 +144,11 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
         </div>
         <div className={styles.infoItem}>
           <h2>平均年齢（生成AI）</h2>
-          <p>{company.averageAge ?? '情報がありません'}</p>
+          <p>{company.averageAgeAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>平均勤続年数（生成AI）</h2>
-          <p>{company.averageContinuousServiceYears ?? '情報がありません'}</p>
+          <p>{company.averageContinuousServiceYearsAi ?? '情報がありません'}</p>
         </div>
       </div>
 
