@@ -7,6 +7,7 @@ import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import SearchForm from '@/components/registercompany/searchForm';
 import type { Company } from '@/interface/interface';
+import Loading from '@/components/common/Loading';
 
 interface ContentProps {
   companies: Company[];  
@@ -23,7 +24,7 @@ const Content: React.FC<ContentProps> = ({ companies }) => {
   }, [user, loading, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />
   }
 
   return (
