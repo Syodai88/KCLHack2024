@@ -1,29 +1,27 @@
 import * as React from 'react';
-import { Card, CardContent, CardMedia, Typography, CardActions, Button, Grid } from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Card, CardContent, CardMedia, Typography, Button, Grid, IconButton } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { Company } from '@/interface/interface';
+import { FaHeart, FaUserGraduate, FaCalendarCheck, FaInfoCircle } from 'react-icons/fa';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BusinessIcon from '@mui/icons-material/Business';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import GroupIcon from '@mui/icons-material/Group';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import styles from './CompanyCard.module.css'; 
 
 interface CompanyCardProps {
-  userId: string;
-  image: string;
-  name: string;
-  details: string;
-  companyId: string;
-  interestCount: number;
-  internCount: number;
-  eventJoinCount: number;
-  userInterest: boolean;
-  userIntern: boolean;
-  userEventJoin: boolean;
-
+  company : Company,
+  userId : string,
+  image : string,
 }
 
-const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details, companyId, interestCount, internCount, eventJoinCount }) => {
+const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, company }) => {
   const router = useRouter();
-  const [currentInterestCount, setCurrentInterestCount] = useState(interestCount);
-  const [currentInternCount, setCurrentInternCount] = useState(internCount);
-  const [currentEventJoinCount, setCurrentEventJoinCount] = useState(eventJoinCount);
+  const [currentInterestCount, setCurrentInterestCount] = useState(company.interestedCount);
+  const [currentInternCount, setCurrentInternCount] = useState(company.internCount);
+  const [currentEventJoinCount, setCurrentEventJoinCount] = useState(company.eventJoinCount);
   const [isInterested, setIsInterested] = useState(false);
   const [isInterned, setIsInterned] = useState(false);
   const [isEventJoined, setIsEventJoined] = useState(false);
@@ -36,7 +34,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId:userId, companyId:companyId }),
+          body: JSON.stringify({ userId:userId, companyId:company.corporateNumber }),
         });
 
         if (response.ok) {
@@ -52,13 +50,13 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
       }
     };
 
-    if (userId && companyId) {
+    if (userId && company.corporateNumber) {
       fetchUserReactions();
     }
-  }, [userId, companyId]);
+  }, [userId, company.corporateNumber]);
 
   const handleCardClick = () => {
-    router.push(`/companies/${companyId}`);
+    router.push(`/companies/${company.corporateNumber}`);
   };
 
   const handleReactionClick = async (actionType: string) => {
@@ -68,7 +66,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ actionType:actionType, companyId:companyId, userId:userId }),
+        body: JSON.stringify({ actionType:actionType, companyId:company.corporateNumber, userId:userId }),
       });
   
       if (response.ok) {
@@ -92,65 +90,105 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, name, details,
 
   return (
     <Card
+      onClick={handleCardClick}
       sx={{
+        fontFamily: "'Roboto', 'sans-serif'",
         display: 'flex',
-        marginBottom: 2,
-        cursor: 'pointer',
+        flexDirection: 'column',
+        marginBottom: 3,
+        padding: 2,
+        borderRadius: 2,
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
         transition: 'transform 0.3s',
+        '&:hover': {
+          transform: 'scale(1.02)',
+        },
       }}
     >
-      <Grid container spacing={0}>
-        <Grid item xs={2} sx={{ justifyContent: 'center' }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={3}>
           <CardMedia
             component="img"
             image={image}
-            alt={name}
+            alt={company.name}
+            sx={{ width: '100%', height: 'auto', borderRadius: 1 }}
           />
         </Grid>
-        <Grid item xs={10}>
-          <CardContent sx={{ flex: '1 0 auto' }} onClick={handleCardClick}>
-            <Typography component="div" variant="h5" sx={{ marginBottom: 2 }}>
-              {name}
+        <Grid item xs={12} sm={9}>
+          <CardContent onClick={(e) => e.stopPropagation()} sx={{ paddingBottom: '16px' }}>
+            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold', marginBottom: 1, cursor: 'pointer' }} onClick={handleCardClick}>
+              {company.name}
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ marginBottom: 2 }}>
-              {details}
+            <Typography variant="subtitle1" color="text.primary" sx={{ marginBottom: 2, cursor: 'pointer' }} onClick={handleCardClick}>
+              {company.keyMessageAi}
+            </Typography>
+
+            <Grid container spacing={1}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LocationOnIcon sx={{ fontSize: 20, marginRight: 1 }} /> 所在地: {company.location || '情報がありません'}
+                </Typography>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <GroupIcon sx={{ fontSize: 20, marginRight: 1 }} /> 従業員数: {company.employeeNumberAi || company.employeeNumber || '情報がありません'}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MonetizationOnIcon sx={{ fontSize: 20, marginRight: 1 }} /> 新卒平均: {company.averageSalaryAi || '情報がありません'}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CalendarTodayIcon sx={{ fontSize: 20, marginRight: 1 }} /> 設立日: {company.dateOfEstablishment || '情報がありません'}
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+              <BusinessIcon sx={{ fontSize: 20, marginRight: 1 }} /> 業務概要:
+            </Typography>
+
+            <Typography variant="body1" color="text.secondary" sx={{ marginLeft: 3, marginTop: 1 }}>
+              {company.businessSummaryAi || '情報がありません'}
             </Typography>
           </CardContent>
-          <Grid container spacing={0}>
-            <Grid item xs={3}>
-              <CardActions sx={{ marginLeft: 5, alignItems: 'center' }}>
-                <Button size="medium" variant="outlined" onClick={handleCardClick}>
-                  詳しく見る
-                </Button>
-              </CardActions>
-            </Grid>
-            <Grid item xs={9}>
-              <CardActions sx={{ marginLeft: 5, alignItems: 'center' }}>
-                <Button
-                  startIcon={<FavoriteIcon />}
-                  size="medium"
-                  variant={isInterested ? 'contained' : 'outlined'}
-                  onClick={() => handleReactionClick('interest')}
-                >
-                  気になる ({currentInterestCount})
-                </Button>
-                <Button
-                  size="medium"
-                  variant={isInterned ? 'contained' : 'outlined'}
-                  onClick={() => handleReactionClick('intern')}
-                >
-                  インターン参加 ({currentInternCount})
-                </Button>
-                <Button
-                  size="medium"
-                  variant={isEventJoined ? 'contained' : 'outlined'}
-                  onClick={() => handleReactionClick('eventJoin')}
-                >
-                  イベント参加 ({currentEventJoinCount})
-                </Button>
-              </CardActions>
-            </Grid>
-          </Grid>
+          <div className={styles.actionButtons}>
+            <div className={styles.reactionButtons}>
+              <button
+                onClick={() => handleReactionClick('interest')}
+                className={`${styles.button} ${isInterested ? styles.interested : ''}`}
+              >
+                <FaHeart />
+                興味 ({currentInterestCount})
+              </button>
+              <button
+                onClick={() => handleReactionClick('intern')}
+                className={`${styles.button} ${isInterned ? styles.interned : ''}`}
+              >
+                <FaUserGraduate />
+                インターン ({currentInternCount})
+              </button>
+              <button
+                onClick={() => handleReactionClick('eventJoin')}
+                className={`${styles.button} ${isEventJoined ? styles.attendedEvent : ''}`}
+              >
+                <FaCalendarCheck />
+                イベント ({currentEventJoinCount})
+              </button>
+              <button 
+                onClick={handleCardClick} 
+                className={styles.detailButton}
+              >
+                <FaInfoCircle />
+                詳細
+              </button>
+            </div>
+          </div>
         </Grid>
       </Grid>
     </Card>

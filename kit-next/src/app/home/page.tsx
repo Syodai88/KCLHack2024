@@ -6,23 +6,10 @@ import Companycard from '../../components/common/Companycard'
 import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import SearchForm from '@/components/registercompany/searchForm';
-
-interface Company  {
-  userId: string;
-  corporateNumber: string;
-  name: string;
-  location: string;
-  companyUrl: string;
-  businessSummary: string;
-  businessSummaryAi : string;
-  interestedCount: number;
-  internCount: number;
-  eventJoinCount: number;
-  updateDate: string;
-}
+import type { Company } from '@/interface/interface';
 
 interface ContentProps {
-  companies: Company[];  // 検索結果の企業リストを受け取る
+  companies: Company[];  
 }
 
 const Content: React.FC<ContentProps> = ({ companies }) => {
@@ -40,31 +27,19 @@ const Content: React.FC<ContentProps> = ({ companies }) => {
   }
 
   return (
-    <div>
-      <h1>Welcome, {user?.email}</h1>
-      <p>User ID: {user?.uid}</p>
-      <div>
-        {companies.length > 0 ? (
-          companies.map((company) => (
-            <Companycard
-              key={company.corporateNumber}
-              userId={user?.uid || ''}
-              image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
-              name={company.name}
-              details={`所在地: ${company.location}\n業務概要: ${company.businessSummary}\n最終更新日: ${company.updateDate}\nLike Count: ${company.interestedCount}`} 
-              companyId={company.corporateNumber} 
-              interestCount={company.interestedCount} 
-              internCount={company.internCount} 
-              eventJoinCount={company.eventJoinCount}
-              userInterest={false} 
-              userIntern={false} 
-              userEventJoin={false}
-            />
-          ))
-        ) : (
-          <p>上位企業情報が見つかりませんでした。</p>
-        )}
-      </div>
+    <div style={{ marginTop: '30px' }}>
+      {companies.length > 0 ? (
+        companies.map((company : Company) => (
+          <Companycard
+            key={company.corporateNumber}
+            userId={user?.uid || ''}
+            company={company}
+            image='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6WtGDvj1jszSP30qcBgkdNhSRkB4FHNGiN8s85mvGUDw-w2H3Hw-numR7W7tkWygsQ4mG-fLTBotRvV86eVJTdd473sryVzgrMx_Nxbs1IDuHQ0rNwWfbvoC6Zd1OFEpbMMBfE2YmN2I/s800/business_icon_big_company.png'
+          />
+        ))
+      ) : (
+        <p>上位企業情報が見つかりませんでした。</p>
+      )}
     </div>
   );
 };
