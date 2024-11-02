@@ -1,11 +1,15 @@
 import React from 'react';
 import styles from './Loading.module.css';
 
-const Loading: React.FC = () => {
+interface LoadingProps{
+  message?: string;//デフォルトはLoading
+}
+
+const Loading: React.FC<LoadingProps> = ({message = "Loading"}) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.ring}>
-        loading 
+        {message}
         <span></span>
       </div>
     </div>
