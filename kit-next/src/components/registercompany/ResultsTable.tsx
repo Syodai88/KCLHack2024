@@ -1,7 +1,8 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import Pagination from '../common/Pagination';
 import CompanyDetailModal from './CompanyDetailModal';
 import axios from 'axios';
+import Loading from '../common/Loading';
 
 interface Company {
   corporate_number: string;
@@ -24,6 +25,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [companyDetails, setCompanyDetails] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // モーダルの開閉状態を管理
+  const [registerState, setRegisterState] = useState<string | null>(null); // Loading、Error、Warning
 
   const fetchCompanyDetails = async (corporateNumber: string) => {
     try {
@@ -52,15 +54,18 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
     if (!selectedCompany) return;
     
     try {
+      setRegisterState("Loading");
       const generateResponse = await axios.post('/api/generateCompanyInfo', {
         companyName: selectedCompany.name,
       });
       console.log(generateResponse);
       if (generateResponse.status !== 200) {
-        alert('企業情報の生成に失敗しました');
+        setRegisterState('Error');
+        setTimeout(() => {
+          setRegisterState(null);
+        }, 3000);
         return;
       }
-  
       // AIで生成された企業情報
       const aiCompanyDetails = generateResponse.data;
   
@@ -85,34 +90,56 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
   
       // 登録後の処理を検討、alertより登録中的な動き出したい
       if (response.status === 201) {
-        alert('会社情報が正常に登録されました');
+        setRegisterState('Success');
+        setTimeout(() => {
+          setRegisterState(null);
+        }, 3000);
       } else {
-        alert('会社情報の登録に失敗しました');
+        setRegisterState('Error');
+        setTimeout(() => {
+          setRegisterState(null);
+        }, 3000);
       }
     } catch (error:any) {
       if (error.response) {
         if (error.response.status === 409) {
           // 既に登録されている場合
+          setRegisterState('Warning');
           console.error('Company already registered:', error.response.data.error);
-          alert('この会社は既に登録されています。');
+          setTimeout(() => {
+            setRegisterState(null);
+          }, 3000);
         } else {
           // その他のエラー
           console.error('Error registering company:', error.response.data.error);
-          alert('会社情報の登録に失敗しました。');
+          setRegisterState('Error');
+          setTimeout(() => {
+            setRegisterState(null);
+          }, 3000);
         }
       } else {
         // ネットワークエラーなど
         console.error('Network error:', error);
-        alert('ネットワークエラーが発生しました。');
+        setRegisterState('Error');
+          setTimeout(() => {
+            setRegisterState(null);
+          }, 3000);
       }
     } finally {
       // モーダルを閉じる
       closeModal();
     }
   };
+  if(registerState === "Loading"){
+    return <Loading message='登録中...' />
+  }else if(registerState === "Success"){
+    return <Loading message='登録しました'/>
+  }else if(registerState === "Error"){
+    return <Loading message='失敗しました' type='Error' />
+  }else if(registerState === "Warning"){
+    return <Loading message='登録済' type='Warning' />
+  }
 
-
-  
 
   return (
     <div className="p-6">
