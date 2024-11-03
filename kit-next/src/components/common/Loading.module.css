@@ -1,97 +1,123 @@
 /* ページ全体を覆うオーバーレイ */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px); /* 背景をぼかす */
-    z-index: 9999; /* 他の要素より前面に表示 */
-  }
-  
-  /* ローディングアニメーションのスタイル */
-  .ring {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    background: transparent;
-    border: 3px solid #3c3c3c;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 150px;
-    font-family: sans-serif;
-    font-size: 20px;
-    color: #00bfff; /* 青系統の色 */
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-shadow: 1px 2px 10px #00bfff;
-    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(0deg, #333, #000);
-    box-shadow: 
-      0 0 0 4px #353535, 
-      0 0 0 5px #3e3e3e,
-      inset 0 0 10px rgba(0, 0, 0, 1), 
-      0 5px 20px rgba(0, 0, 0, 0.5), 
-      inset 0 0 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  .ring::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    width: 100%;
-    height: 100%;
-    border: 3px solid transparent;
-    border-top: 3px solid #00bfff;
-    border-right: 3px solid #00bfff;
-    border-radius: 50%;
-    animation: animateCircle 2s linear infinite;
-  }
-  
-  .ring span {
-    display: block;
-    position: absolute;
-    top: calc(50% - 2px);
-    left: 50%;
-    width: 50%;
-    height: 4px;
-    background: transparent;
-    transform-origin: left;
-    animation: animate 2s linear infinite;
-  }
-  
-  .ring span::before {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    background: #00bfff;
-    border-radius: 50%;
-    top: -6px;
-    right: -8px;
-    box-shadow: 0 0 20px #00bfff;
-  }
-  
-  @keyframes animateCircle {
-    0% {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px); /* 背景をぼかす */
+  z-index: 9999; /* 他の要素より前面に表示 */
+}
+
+/* ローディングアニメーションのスタイル */
+.ring {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background: transparent;
+  border: 3px solid #3c3c3c;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 150px;
+  font-family: sans-serif;
+  font-size: 20px;
+  color: #00bfff; /* 青系統の色 */
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 1px 2px 10px #00bfff;
+  background: linear-gradient(0deg, #333, #000);
+  box-shadow: 0 0 0 4px #353535, 0 0 0 5px #3e3e3e,
+              inset 0 0 10px rgba(0, 0, 0, 1),
+              0 5px 20px rgba(0, 0, 0, 0.5),
+              inset 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.ring::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top: 3px solid #00bfff;
+  border-right: 3px solid #00bfff;
+  border-radius: 50%;
+  animation: animateCircle 2s linear infinite;
+}
+
+.ring span {
+  display: block;
+  position: absolute;
+  top: calc(50% - 2px);
+  left: 50%;
+  width: 50%;
+  height: 4px;
+  background: transparent;
+  transform-origin: left;
+  animation: animate 2s linear infinite;
+}
+
+.ring span::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #00bfff;
+  border-radius: 50%;
+  top: -6px;
+  right: -8px;
+  box-shadow: 0 0 20px #00bfff;
+}
+
+/* 警告状態のスタイル */
+.overlay.Warning .ring {
+  color: #ffc107; /* 黄色 */
+  text-shadow: 1px 2px 10px #ffc107;
+}
+.overlay.Warning .ring::before {
+  border-top: 3px solid #ffc107;
+  border-right: 3px solid #ffc107;
+}
+.overlay.Warning .ring span::before {
+  background: #ffc107;
+  box-shadow: 0 0 20px #ffc107;
+}
+
+/* エラー状態のスタイル */
+.overlay.Error .ring {
+  color: #dc3545; /* 赤色 */
+  text-shadow: 1px 2px 10px #dc3545;
+}
+.overlay.Error .ring::before {
+  border-top: 3px solid #dc3545;
+  border-right: 3px solid #dc3545;
+}
+.overlay.Error .ring span::before {
+  background: #dc3545;
+  box-shadow: 0 0
+   20px #dc3545;
+}
+
+
+@keyframes animateCircle {
+  0% {
       transform: rotate(0deg);
-    }
-    100% {
+  }
+  100% {
       transform: rotate(360deg);
-    }
   }
-  
-  @keyframes animate {
-    0% {
+}
+
+@keyframes animate {
+  0% {
       transform: rotate(45deg);
-    }
-    100% {
-      transform: rotate(405deg);
-    }
   }
-  
+  100% {
+      transform: rotate(405deg);
+  }
+}
