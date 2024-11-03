@@ -9,6 +9,7 @@ import Sidebar from '@/components/common/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/interface/interface';
+import Loading from '@/components/common/Loading';
 
 
 const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
@@ -20,12 +21,15 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
   const [currentInterestCount, setCurrentInterestCount] = useState(0);
   const [currentInternCount, setCurrentInternCount] = useState(0);
   const [currentEventJoinCount, setCurrentEventJoinCount] = useState(0);
+  const [isLoading, setIsLoading] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
+        setIsLoading("Loading");
         const response = await fetch(`/api/getDbCompanyInfo?corporateNumber=${companyId}`);
         if (!response.ok) {
+          setIsLoading(null);
           notFound();
           return;
         }
@@ -35,7 +39,9 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
         setCurrentInterestCount(companyData.interestedCount);
         setCurrentInternCount(companyData.internCount);
         setCurrentEventJoinCount(companyData.eventJoinCount);
+        setIsLoading(null);
       } catch (error) {
+        setIsLoading("Error");
         console.error('企業情報の取得エラー:', error);
       }
     };
@@ -46,6 +52,7 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
     const userId = user?.uid;
     const fetchUserReactions = async () => {
       try {
+        setIsLoading("Loading");
         const response = await fetch('/api/fetchUserReactions', {
           method: 'POST',
           headers: {
@@ -59,14 +66,23 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
           setIsInterested(data.isInterested);
           setIsInterned(data.isInterned);
           setIsEventJoined(data.isEventJoined);
+          setIsLoading(null);
         } else {
+          setIsLoading("Error");
           console.error('Failed to fetch user reactions');
+          setTimeout(() => {
+            setIsLoading(null);
+          }, 3000);
+
         }
       } catch (error) {
+        setIsLoading("Error");
         console.error('Error fetching user reactions:', error);
+        setTimeout(() => {
+          setIsLoading(null);
+        }, 3000);
       }
     };
-
     if (userId && companyId) {
       fetchUserReactions();
     }
@@ -102,7 +118,11 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
     }
   };
 
-  if (!company) {
+  if (isLoading ==="Loading"){
+    return <Loading/>
+  }else if (isLoading ==="Error"){
+    return <Loading type="Error" message='Company Error'/>
+  }else if (!company) {
     return <div className={styles.error}>企業の詳細を読み込めませんでした</div>;
   }
 

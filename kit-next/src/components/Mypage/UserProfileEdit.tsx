@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ImageCropper from '@/components/Mypage/ImageCropper';
 import styles from './UserProfileEdit.module.css';
+import Loading from '../common/Loading';
 
 interface Profile {
     name: string;
@@ -22,6 +23,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     const [faculty, setFaculty] = useState<string>("");
     const [department, setDepartment] = useState<string>("");
     const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
+    const [isUpLoading, setIsUpLoading] = useState<string | null>(null);
 
     // 学年の選択肢
     const years = [
@@ -113,6 +115,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     // プロフィールを保存する関数
     const handleSave = async () => {
         try {
+            setIsUpLoading("Loading");
             let profileImageUrl = profile.profileImage;
             if (croppedImageFile) {
                 const reader = new FileReader();
@@ -127,16 +130,26 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                         const data = await response.json();
                         profileImageUrl = data.url;
                     } else {
+                        setIsUpLoading("Error");
                         console.error("画像のアップロードに失敗しました");
+                        setTimeout(() => {
+                            setIsUpLoading(null);
+                        }, 3000);
                     }
                     await updateUserProfile(profileImageUrl);
+                    setIsUpLoading(null);
                 };
                 reader.readAsDataURL(croppedImageFile);
             } else {
                 await updateUserProfile(profileImageUrl);
+                setIsUpLoading(null);
             }
         } catch (error) {
+            setIsUpLoading("Error");
             console.error("プロフィールの更新中にエラーが発生しました:", error);
+            setTimeout(() => {
+                setIsUpLoading(null);
+            }, 3000);
         }
     };
 
@@ -161,10 +174,18 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                 setIsEditing(false);
                 setProfile(updatedProfile);
             } else {
+                setIsUpLoading("Error");
                 console.error("プロフィールの更新に失敗しました");
+                setTimeout(() => {
+                    setIsUpLoading(null);
+                }, 3000);
             }
         } catch (error) {
+            setIsUpLoading("Error");
             console.error("プロフィールの更新中にエラーが発生しました:", error);
+            setTimeout(() => {
+                setIsUpLoading(null);
+            }, 3000);
         }
     };
 
@@ -173,6 +194,11 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
         setSelectedImage(croppedImageUrl);
         setCroppedImageFile(croppedImageFile);
     };
+    if(isUpLoading === "Loading"){
+        return <Loading message='UpLoad'/>
+    }else if(isUpLoading === "Error"){
+        return <Loading type="Error" message='Error UpLoading'/>
+    }
 
     return (
         <div className={styles.form}>

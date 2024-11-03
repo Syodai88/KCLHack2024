@@ -39,7 +39,7 @@ const Content: React.FC<ContentProps> = ({ companies }) => {
           />
         ))
       ) : (
-        <p>上位企業情報が見つかりませんでした。</p>
+        <Loading/>
       )}
     </div>
   );
