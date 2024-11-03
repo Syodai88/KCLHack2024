@@ -7,6 +7,7 @@ import styles from './UserProfile.module.css';
 import React, { useState, useEffect } from 'react';
 import UserProfileEdit from './UserProfileEdit';
 import { useAuth } from '@/context/AuthContext';
+import Loading from '../common/Loading';
 
 interface Profile {
     name: string;
@@ -26,11 +27,13 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
         profileImage: "",
     });
     const loggedInUserId = useAuth().user?.uid;
+    const [isloading, setIsLoading] = useState<boolean>(false);
 
     // ユーザーデータを取得
     useEffect(() => {
         const getUserData = async () => {
             try {
+                setIsLoading(true);
                 const response = await fetch(`/api/getUserProfile?userId=${userId}`);
                 if (response.ok) {
                     const data = await response.json();
@@ -40,6 +43,8 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 }
             } catch (error) {
                 console.error("ユーザーデータの取得中にエラーが発生しました:", error);
+            } finally{
+                setIsLoading(false);
             }
         };
         getUserData();
@@ -71,6 +76,9 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
         }
     };
 
+    if (isloading){
+        return <Loading/>
+    }
     return (
         <div className={styles.container}>
             <div className={styles.avatarContainer}>
