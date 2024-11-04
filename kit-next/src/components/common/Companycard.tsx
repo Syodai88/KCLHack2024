@@ -160,21 +160,30 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, company }) => 
           <div className={styles.actionButtons}>
             <div className={styles.reactionButtons}>
               <button
-                onClick={() => handleReactionClick('interest')}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  handleReactionClick('interest');
+                }}
                 className={`${styles.button} ${isInterested ? styles.interested : ''}`}
               >
                 <FaHeart />
                 興味 ({currentInterestCount})
               </button>
               <button
-                onClick={() => handleReactionClick('intern')}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  handleReactionClick('intern');
+                }}
                 className={`${styles.button} ${isInterned ? styles.interned : ''}`}
               >
                 <FaUserGraduate />
                 インターン ({currentInternCount})
               </button>
               <button
-                onClick={() => handleReactionClick('eventJoin')}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  handleReactionClick('eventJoin');
+                }}
                 className={`${styles.button} ${isEventJoined ? styles.attendedEvent : ''}`}
               >
                 <FaCalendarCheck />
