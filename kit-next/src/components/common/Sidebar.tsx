@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import { RxAvatar } from 'react-icons/rx';
 import { useAuth } from '@/context/AuthContext';
-import styles from './Sidebar.module.css'; // CSSファイルのインポート
+import styles from './Sidebar.module.css'; 
+import { IconButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const Sidebar: React.FC = () => {
     const router = useRouter();
@@ -61,12 +63,9 @@ const Sidebar: React.FC = () => {
                         <RxAvatar size={50} />
                     )}
                 </Avatar>
-                {nickname && <span className="nickname">{nickname}</span>}
+                {nickname && <span className={styles.nickname}>{nickname}</span>}
             </div>
             <div className={styles.linkList}>
-                <Link href="/post-page" className={styles.link}>
-                    → 感想投稿ページ
-                </Link>
                 <Link href="/home" className={styles.link}>
                     → 企業検索ページ
                 </Link>
@@ -77,6 +76,9 @@ const Sidebar: React.FC = () => {
                     → 感想詳細ページ
                 </Link>
             </div>
+            <button className={styles.plusButton} onClick={() => router.push('/post-page')}>
+                +
+            </button>
         </div>
     );
 };
