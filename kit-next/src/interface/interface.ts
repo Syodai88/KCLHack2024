@@ -1,4 +1,5 @@
 export interface Company{
+    isPopular? : boolean;
     corporateNumber: string;
     name: string;
     location: string;

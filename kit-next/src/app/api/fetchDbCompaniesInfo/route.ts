@@ -5,23 +5,27 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('name'); 
 
-  if (!query) {
-    return NextResponse.json({ error: 'name query parameter is required' }, { status: 400 });
-  }
-
   try {
-    const results = await prisma.company.findMany({
-      where: {
-        name: {
-          contains: query,  // 部分一致の条件
-          mode: 'insensitive', // 大文字小文字を区別しない
+    let results;
+    if (query){//任意検索
+      results = await prisma.company.findMany({
+        where: {
+          name: {
+            contains: query,  // 部分一致の条件
+            mode: 'insensitive', // 大文字小文字を区別しない
+          },
         },
-      },
-      orderBy: {
-        interestedCount: 'desc', // 興味数で並び替え
-      },
-    });
-
+        orderBy: {
+          interestedCount: 'desc', // 興味数で並び替え
+        },
+      });
+    }else{//全件取得
+      results = await prisma.company.findMany({
+        orderBy: {
+          interestedCount: 'desc', // 興味数で並び替え
+        },
+      });
+    }
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error('Error fetching top companies:', error);
