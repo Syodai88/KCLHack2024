@@ -99,7 +99,15 @@ const Home: React.FC = () => {
   return (
     <SplitPage sidebar={<Sidebar />}>
       <SearchForm onSearch={fetchCompanies} placeholder='企業名を入力(空白で全件表示)' />
-      <Content companies={results} /> {/* 検索結果をContentに渡す */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          height: 'calc(100vh - 50px - 48px)',//NavibarとSeasonFromの高さを引いてスクロール設定
+        }}
+      >
+        <Content companies={results} /> {/* 検索結果をContentに渡す */}
+      </div>
     </SplitPage>
   );
 }
