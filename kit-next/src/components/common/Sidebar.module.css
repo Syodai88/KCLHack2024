@@ -1,0 +1,45 @@
+.avatarContainer {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 15px;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.avatar {
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+.linkList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* リンク間の余白 */
+}
+
+.link {
+    background-color: #DFDFDF;
+    color: #000;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+.link:hover {
+    background-color: #EB8686;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
