@@ -9,7 +9,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import GroupIcon from '@mui/icons-material/Group';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import styles from './CompanyCard.module.css'; 
+import styles from './Companycard.module.css'; 
 
 interface CompanyCardProps {
   company : Company,
