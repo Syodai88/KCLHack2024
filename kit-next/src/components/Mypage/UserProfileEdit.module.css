@@ -48,4 +48,52 @@
   .button:hover {
     background-color: #38a169;
   }
-  
+
+  /* UserProfileEdit.module.css */
+
+.avatarContainer {
+  position: relative;
+  width: fit-content;
+  margin-bottom: 20px; /* 適宜調整 */
+}
+
+.avatarWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cameraIcon {
+  color: #fff;
+  font-size: 1.2em;
+}
+
+.modalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 50px;
+  outline: none;
+  border-radius: 16px;
+  max-width:90%;
+  max-height: 90%;
+  overflow: auto;
+}
