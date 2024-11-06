@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import remarkBreaks from 'remark-breaks'; 
 import styles from './UserProfile.module.css';
 import React, { useState, useEffect } from 'react';
 import UserProfileEdit from './UserProfileEdit';
@@ -131,7 +132,7 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 </p>
                 <div className={styles.otherInfo}>
                     <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkMath]}
+                        remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                         rehypePlugins={[rehypeKatex]}
                         className={styles.markdown}
                     >
