@@ -8,108 +8,158 @@ import React, { useState, useEffect } from 'react';
 import UserProfileEdit from './UserProfileEdit';
 import { useAuth } from '@/context/AuthContext';
 import Loading from '../common/Loading';
+import { FaEdit } from 'react-icons/fa';
 
 interface Profile {
-    name: string;
-    year: string;
-    department: string;
-    other: string;
-    profileImage: string;
+  name: string;
+  year: string;
+  department: string;
+  other: string;
+  profileImage: string;
+}
+
+interface PostTitle {
+  id: string;
+  title: string;
 }
 
 const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
-    const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [profile, setProfile] = useState<Profile>({
-        name: "",
-        year: "",
-        department: "",
-        other: "",
-        profileImage: "",
-    });
-    const loggedInUserId = useAuth().user?.uid;
-    const [isloading, setIsLoading] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [profile, setProfile] = useState<Profile>({
+    name: '',
+    year: '',
+    department: '',
+    other: '',
+    profileImage: '',
+  });
+  const [posts, setPosts] = useState<PostTitle[]>([]);
+  const loggedInUserId = useAuth().user?.uid;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // ユーザーデータを取得
-    useEffect(() => {
-        const getUserData = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch(`/api/getUserProfile?userId=${userId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProfile(data);
-                } else {
-                    console.error("ユーザーデータの取得に失敗しました");
-                }
-            } catch (error) {
-                console.error("ユーザーデータの取得中にエラーが発生しました:", error);
-            } finally{
-                setIsLoading(false);
-            }
-        };
-        getUserData();
-    }, [userId]);
-
-    const calculateGraduationYear = (year: string): string => {
-        const currentYear = new Date().getFullYear();
-        switch (year) {
-            case 'B1':
-                return `${currentYear + 4}年卒`;
-            case 'B2':
-                return `${currentYear + 3}年卒`;
-            case 'B3':
-                return `${currentYear + 2}年卒`;
-            case 'B4':
-                return `${currentYear + 1}年卒`;
-            case 'M1':
-                return `${currentYear + 2}年卒`;
-            case 'M2':
-                return `${currentYear + 1}年卒`;
-            case 'D1':
-                return `${currentYear + 3}年卒`;
-            case 'D2':
-                return `${currentYear + 2}年卒`;
-            case 'D3':
-                return `${currentYear + 1}年卒`;
-            default:
-                return '卒業年度不明';
+  // ユーザーデータを取得
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/getUserProfile?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data);
+        } else {
+          console.error('ユーザーデータの取得に失敗しました');
         }
+      } catch (error) {
+        console.error('ユーザーデータの取得中にエラーが発生しました:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
+    getUserData();
+  }, [userId]);
 
-    if (isloading){
-        return <Loading/>
+  // ユーザーの投稿を取得（仮のデータを使用）
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      const placeholderPosts = [
+        { id: '1', title: '最初の投稿タイトル' },
+        { id: '2', title: '二番目の投稿タイトル' },
+      ];
+      setPosts(placeholderPosts);
+    };
+    fetchUserPosts();
+  }, []);
+
+  const calculateGraduationYear = (year: string): string => {
+    const currentYear = new Date().getFullYear();
+    switch (year) {
+      case 'B1':
+        return `${currentYear + 4}年卒`;
+      case 'B2':
+        return `${currentYear + 3}年卒`;
+      case 'B3':
+        return `${currentYear + 2}年卒`;
+      case 'B4':
+        return `${currentYear + 1}年卒`;
+      case 'M1':
+        return `${currentYear + 2}年卒`;
+      case 'M2':
+        return `${currentYear + 1}年卒`;
+      case 'D1':
+        return `${currentYear + 3}年卒`;
+      case 'D2':
+        return `${currentYear + 2}年卒`;
+      case 'D3':
+        return `${currentYear + 1}年卒`;
+      default:
+        return '卒業年度不明';
     }
-    return (
-        <div className={styles.container}>
-            <div className={styles.avatarContainer}>
-                <Avatar className={styles.avatar}>
-                    <img src={profile.profileImage} alt="プロフィール画像" className={styles.avatarImage} />
-                </Avatar>
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
+    <div className={styles.container}>
+        {!isEditing && (//編集中の時はアイコンと名前を消す
+            <div className={styles.profileHeader}>
+                <div className={styles.leftSection}>
+                    <Avatar className={styles.avatar} src={profile.profileImage} alt="プロフィール画像" />
+                    <h1 className={styles.profileName}>{profile.name}</h1>
+                </div>
+                {loggedInUserId === userId &&(//自分のページのみ編集可能
+                    <button className={styles.editButton} onClick={() => setIsEditing(true)}>
+                        <FaEdit /> 編集
+                    </button>
+                )}
             </div>
-            {isEditing ? (
-                <UserProfileEdit userId={userId} profile={profile} setProfile={setProfile} setIsEditing={setIsEditing} />
-            ) : (
-                <div className={styles.profileInfo}>
-                    <p className={styles.profileItem}><strong>ニックネーム:</strong> {profile.name}</p>
-                    <p className={styles.profileItem}><strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}</p>
-                    <p className={styles.profileItem}><strong>所属:</strong> {profile.department}</p>
-                    <strong className={styles.profileItem}>資格など:</strong>
+        )}
+        {isEditing ? (
+            <UserProfileEdit
+            userId={userId}
+            profile={profile}
+            setProfile={setProfile}
+            setIsEditing={setIsEditing}
+            />
+        ) : (
+            <>
+            <div className={styles.profileInfo}>
+                <p>
+                    <strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}
+                    <span className={styles.separator}> | </span>
+                    <strong>所属:</strong> {profile.department}
+                </p>
+                <div className={styles.otherInfo}>
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[rehypeKatex]}
                         className={styles.markdown}
                     >
-                        {profile.other || ""}
+                        {profile.other || '情報がありません。'}
                     </ReactMarkdown>
-                    {loggedInUserId === userId && (
-                        <button className={styles.editButton} onClick={() => setIsEditing(true)}>
-                            編集
-                        </button>
-                    )}
                 </div>
-            )}
-        </div>
-    );
+            </div>
+            {/* 投稿一覧 */}
+            <div className={styles.postsSection}>
+                <h2>投稿一覧</h2>
+                {posts.length > 0 ? (
+                <ul className={styles.postList}>
+                    {posts.map((post) => (
+                    <li key={post.id} className={styles.postItem}>
+                        <a href={`/posts/${post.id}`} className={styles.postLink}>
+                        {post.title}
+                        </a>
+                    </li>
+                    ))}
+                </ul>
+                ) : (
+                <p>投稿がありません。</p>
+                )}
+            </div>
+            </>
+        )}
+    </div>
+  );
 };
 
 export default UserProfile;
