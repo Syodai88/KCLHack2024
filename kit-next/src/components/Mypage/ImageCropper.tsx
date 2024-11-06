@@ -1,16 +1,16 @@
 // ImageCropper.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import styles from './ImageCropper.module.css';
 import imageCompression from 'browser-image-compression';
 
 interface ImageCropperProps {
-    initialImageUrl: string ; // 初期画像のURL
+    imageFile: File | null; // 外部から受け取る画像ファイル
     onImageCropped: (croppedImageUrl: string, croppedImageFile: File) => void;
 }
 
-const ImageCropper: React.FC<ImageCropperProps> = ({ onImageCropped }) => {
+const ImageCropper: React.FC<ImageCropperProps> = ({ imageFile, onImageCropped }) => {
   const [upImg, setUpImg] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [crop, setCrop] = useState<Crop>({
@@ -21,12 +21,19 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onImageCropped }) => {
     y: 0,
   });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
-  const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
 
-  // ファイル選択ダイアログを開く関数
-  const openFileDialog = () => {
-    document.getElementById('fileInput')?.click();
-  };
+  // imageFileが変更されたら画像を読み込む
+  useEffect(() => {
+    if (imageFile) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setUpImg(reader.result as string);
+      });
+      reader.readAsDataURL(imageFile);
+    } else {
+      setUpImg(null); // imageFileがnullの場合はupImgをリセット
+    }
+  }, [imageFile]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -123,7 +130,6 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onImageCropped }) => {
       if (result) {
         const { url, file } = result;
         onImageCropped(url, file);
-        setCroppedImageUrl(url); // プレビュー用に設定
         setUpImg(null); // クロップエリアを非表示にする
       }
     } catch (error) {
@@ -134,17 +140,6 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onImageCropped }) => {
 
   return (
     <div className={styles.cropperContainer}>
-      <button className={styles.changeImageButton} onClick={openFileDialog}>
-        画像を変更
-      </button>
-      {/* ファイル選択ボタンは非表示 */}
-      <input
-        id="fileInput"
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        style={{ display: 'none' }}
-      />
       {/* 画像が選択されたらクロップエリアを表示 */}
       {upImg && (
         <div className={styles.cropArea}>
@@ -155,7 +150,6 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onImageCropped }) => {
             aspect={1} // アスペクト比を1に設定（正方形）
             circularCrop={true}
             style={{ maxWidth: '100%', maxHeight: '80vh', minWidth: 200, minHeight: 200 }}
-
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={upImg} onLoad={onLoad} alt="Crop me" />
