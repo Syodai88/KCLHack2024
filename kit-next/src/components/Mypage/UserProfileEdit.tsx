@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ImageCropper from '@/components/Mypage/ImageCropper';
 import styles from './UserProfileEdit.module.css';
 import Loading from '../common/Loading';
+import { Avatar } from '@mui/material';
+import { FaCamera } from 'react-icons/fa';
+import Modal from '@mui/material/Modal';
 
 interface Profile {
     name: string;
@@ -24,6 +27,8 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     const [department, setDepartment] = useState<string>("");
     const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
     const [isUpLoading, setIsUpLoading] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // 学年の選択肢
     const years = [
@@ -99,7 +104,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === "name" || name === "year" || name === "other") {
-            if (name === "other" && value.length > 200) {
+            if (name === "other" && value.length > 500) {
                 alert("資格などの入力は最大200文字までです。");
                 return;
             }
@@ -189,25 +194,58 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
         }
     };
 
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    // ファイルが選択されたときの処理
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+        setImageFile(e.target.files[0]);
+        e.target.value = ''; // ファイル入力をリセット
+        }
+    };
+
     const handleImageCropped = (croppedImageUrl: string, croppedImageFile: File) => {
         setProfile(prev => ({ ...prev, profileImage: croppedImageUrl }));
         setSelectedImage(croppedImageUrl);
         setCroppedImageFile(croppedImageFile);
+        setImageFile(null); // クロップが完了したらimageFileをリセット
     };
+
+     // モーダルを閉じる処理
+    const handleCloseModal = () => {
+        setImageFile(null);
+    };
+    
     if(isUpLoading === "Loading"){
         return <Loading message='UpLoad'/>
     }else if(isUpLoading === "Error"){
         return <Loading type="Error" message='Error UpLoading'/>
     }
-
+    
     return (
         <div className={styles.form}>
             <div className={styles.formGroup}>
-                <div className={styles.cropContainer}>
-                    <ImageCropper
-                        initialImageUrl={selectedImage || '/default-avatar.png'}
-                        onImageCropped={handleImageCropped}
-                    />
+                {/* アバターとアイコンを重ねる */}
+                <div className={styles.avatarContainer}>
+                    <div className={styles.avatarWrapper} onClick={handleAvatarClick}>
+                        <Avatar
+                            className={styles.avatar}
+                            src={selectedImage || '/default-avatar.png'}
+                            alt="プロフィール画像"
+                        />
+                        <div className={styles.overlay}>
+                            <FaCamera className={styles.cameraIcon} />
+                        </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                    </div>
                 </div>
                 <label className={styles.label}>ニックネーム</label>
                 <input
@@ -225,7 +263,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                     value={profile.year}
                     onChange={handleInputChange}
                     className={styles.select}
-                >
+                    >
                     <option value="">選択してください</option>
                     {years.map(year => (
                         <option key={year} value={year}>{year}</option>
@@ -239,7 +277,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                     value={faculty}
                     onChange={handleInputChange}
                     className={styles.select}
-                >
+                    >
                     <option value="">選択してください</option>
                     {faculties.map(facultyOption => (
                         <option key={facultyOption.value} value={facultyOption.value}>{facultyOption.label}</option>
@@ -254,7 +292,7 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                     onChange={handleInputChange}
                     className={styles.select}
                     disabled={!faculty}
-                >
+                    >
                     <option value="">選択してください</option>
                     {departments[faculty]?.map(dept => (
                         <option key={dept.value} value={dept.value}>{dept.label}</option>
@@ -268,8 +306,23 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                     value={profile.other || ""}
                     onChange={handleInputChange}
                     className={styles.textarea}
-                />
+                    />
             </div>
+            {/* 画像が選択されたらImageCropperを表示 */}
+            {/* モーダルウィンドウ */}
+            <Modal
+                open={!!imageFile}
+                onClose={handleCloseModal}
+                aria-labelledby="cropper-modal-title"
+                aria-describedby="cropper-modal-description"
+            >
+                <div className={styles.modalBox}>
+                    <ImageCropper
+                    imageFile={imageFile}
+                    onImageCropped={handleImageCropped}
+                    />
+                </div>
+            </Modal>
             <button className={styles.button} onClick={handleSave}>保存</button>
         </div>
     );
