@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { TextField, Box, Autocomplete, Chip, Stack} from '@mui/material';
+import { TextField, Box, Autocomplete, Chip, Stack, Button} from '@mui/material';
 
 const Home: React.FC = () => {
   const { user, loading } = useAuth();
@@ -93,7 +93,7 @@ return (
             placeholder="タグを選択してください"
           />
         )}
-        sx={{ width: '80%', backgroundColor: 'white'}}
+        sx={{ width: '70%', backgroundColor: 'white'}}
       />
         
       
@@ -117,6 +117,10 @@ return (
         margin="normal"
         sx={{ width: '80%', backgroundColor: 'white'}}
       />
+
+      <Button
+      variant='contained'
+      > プレビュー </Button>
       
     </Box>
   );
