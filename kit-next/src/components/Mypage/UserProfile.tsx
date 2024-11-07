@@ -64,6 +64,11 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
       const placeholderPosts = [
         { id: '1', title: '最初の投稿タイトル' },
         { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
+        { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
+        { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
       ];
       setPosts(placeholderPosts);
     };
@@ -123,41 +128,41 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
             setIsEditing={setIsEditing}
             />
         ) : (
-            <>
-            <div className={styles.profileInfo}>
-                <p>
-                    <strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}
-                    <span className={styles.separator}> | </span>
-                    <strong>所属:</strong> {profile.department}
-                </p>
-                <div className={styles.otherInfo}>
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-                        rehypePlugins={[rehypeKatex]}
-                        className={styles.markdown}
-                    >
-                        {profile.other || '情報がありません。'}
-                    </ReactMarkdown>
+            <div className={styles.contentContainer}>
+                <div className={styles.profileInfo}>
+                    <p>
+                        <strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}
+                        <span className={styles.separator}> | </span>
+                        <strong>所属:</strong> {profile.department}
+                    </p>
+                    <div className={styles.otherInfo}>
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+                            rehypePlugins={[rehypeKatex]}
+                            className={styles.markdown}
+                        >
+                            {profile.other || '情報がありません。'}
+                        </ReactMarkdown>
+                    </div>
+                </div>
+                {/* 投稿一覧 */}
+                <div className={styles.postsSection}>
+                    <h2>投稿一覧</h2>
+                    {posts.length > 0 ? (
+                    <ul className={styles.postList}>
+                        {posts.map((post) => (
+                        <li key={post.id} className={styles.postItem}>
+                            <a href={`/posts/${post.id}`} className={styles.postLink}>
+                            {post.title}
+                            </a>
+                        </li>
+                        ))}
+                    </ul>
+                    ) : (
+                    <p>投稿がありません。</p>
+                    )}
                 </div>
             </div>
-            {/* 投稿一覧 */}
-            <div className={styles.postsSection}>
-                <h2>投稿一覧</h2>
-                {posts.length > 0 ? (
-                <ul className={styles.postList}>
-                    {posts.map((post) => (
-                    <li key={post.id} className={styles.postItem}>
-                        <a href={`/posts/${post.id}`} className={styles.postLink}>
-                        {post.title}
-                        </a>
-                    </li>
-                    ))}
-                </ul>
-                ) : (
-                <p>投稿がありません。</p>
-                )}
-            </div>
-            </>
         )}
     </div>
   );
