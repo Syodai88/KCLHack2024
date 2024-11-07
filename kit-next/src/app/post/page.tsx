@@ -93,7 +93,7 @@ return (
             placeholder="タグを選択してください"
           />
         )}
-        sx={{ width: '70%', backgroundColor: 'white'}}
+        sx={{ width: '80%', backgroundColor: 'white'}}
       />
         
       
