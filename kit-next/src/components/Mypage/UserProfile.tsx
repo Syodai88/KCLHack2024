@@ -65,6 +65,11 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
       const placeholderPosts = [
         { id: '1', title: '最初の投稿タイトル' },
         { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
+        { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
+        { id: '2', title: '二番目の投稿タイトル' },
+        { id: '1', title: '最初の投稿タイトル' },
       ];
       setPosts(placeholderPosts);
     };
