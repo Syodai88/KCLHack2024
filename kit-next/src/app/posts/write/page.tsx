@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
 import { TextField, Box, Autocomplete, Chip, Stack, Button} from '@mui/material';
@@ -7,6 +8,18 @@ import { TextField, Box, Autocomplete, Chip, Stack, Button} from '@mui/material'
 const PostWrite: React.FC = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
+
+  // 入力値を管理するステートを追加
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+
+  // バリデーション情報を仮のオブジェクトで設定
+  const validation = { error: false, message: '' }; // バリデーションを追加する場合は適宜変更
+
+  // 選択変更時に呼び出される関数
+  const handleInputChange = (event: any, newValue: string[]) => {
+    setSelectedTags(newValue);
+  };
 
 //   useEffect(() => {
 //     if (!loading && !user) {
@@ -48,53 +61,40 @@ return (
       />
       
 
-      {/* <Autocomplete //importしたコンポーネントを使用
-        multiple //複数選択できるようになる --- ①
+      <Autocomplete //importしたコンポーネントを使用
+        multiple //複数選択できるようになる
         freeSolo //任意の入力値を管理できる（デフォルトはオプション選択のみ）
-        filterSelectedOptions //選択されたオプションを非表示にする --- ②
-        options={top100Films.map(option => option.year)} //ドロップダウンメニューの項目：文字列の配列
-        value={} //入力欄に表示される値：①のときは文字列の配列、指定しないときは文字列 --- ③
-        onChange={handleInputChange} //コールバック関数（オプションを選択か「Enter」を押すとイベントが起きる）： function --- ④
-        sx={{
-          width: 600,
-          display: 'inline-block',
-        }}
+        filterSelectedOptions //選択されたオプションを非表示にする
+        options={tags.map(tag => tag.name)} // tags配列を文字列の配列に変換
+        value={selectedTags} // ステートから選択されたタグを取得
+        onChange={handleInputChange} //コールバック関数（オプションを選択か「Enter」を押すとイベントが起きる）： function
+        sx={{ width: '80%', backgroundColor: 'white'}}
         renderInput={params => (
           <TextField  //importしたコンポーネント
             {...params}
             variant='standard'
-            label='離島マーカーを作る' // --- ⑤
-            placeholder='離島名を選択か、入力後に「Enter」でタグが表示。「＋」でマーカーを作成'
-            error={validation.error} //エラー状態（trueのときは⑤labelや⑥helperTextが赤色になる）： boolean
-            helperText={validation.message} //入力欄の下に表示されるテキスト： node（公式のデモ通り文字列を指定） // --- ⑥
+            placeholder='タグを選択か、入力後に「Enter」でタグを追加'
+            error={validation.error} //エラー状態（trueのときはlabelやhelperTextが赤色になる）： boolean
+            helperText={validation.message} //入力欄の下に表示されるテキスト： node（公式のデモ通り文字列を指定） //
           />
         )}
-      /> */}
+      />
 
       
-      <Autocomplete
+      {/* <Autocomplete
         multiple
         id="tags-standard"
         options={tags}
         getOptionLabel={(option) => option.name}
-        //defaultValue={[top100Films[]]}
         renderInput={(params) => (
           <TextField
             {...params}
             variant="standard"
-            //label="Multiple values"
-            // InputLabelProps={{
-            //   shrink: true,
-            //   style: {
-            //     fontWeight: 'bold', 
-            //     fontSize: '1.3rem', 
-            //   }
-            // }}
             placeholder="タグを選択してください"
           />
         )}
         sx={{ width: '80%', backgroundColor: 'white'}}
-      />
+      /> */}
         
       
 
@@ -111,7 +111,6 @@ return (
         }}
         multiline
         rows={20}
-        //defaultValue="Default Value"
         variant="standard"
         defaultValue={""} 
         margin="normal"
