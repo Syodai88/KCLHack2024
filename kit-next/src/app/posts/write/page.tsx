@@ -1,10 +1,10 @@
 "use client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import { TextField, Box, Autocomplete, Chip, Stack, Button} from '@mui/material';
 
-const Home: React.FC = () => {
+const PostWrite: React.FC = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -136,4 +136,4 @@ const tags = [
   { name: 'その他'}
 ];
 
-export default Home;
+export default PostWrite;
