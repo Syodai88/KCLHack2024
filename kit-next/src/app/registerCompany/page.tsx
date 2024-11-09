@@ -30,6 +30,7 @@ const RegisterCompany: React.FC = () => {
       const res = await fetch(`/api/searchCompany?name=${encodeURIComponent(query)}`);
       const data = await res.json();
       setResults(data['hojin-infos'] || []); 
+      setCurrentPage(1);
     } catch (error) {
       console.error('Error fetching companies:', error);
       setResults([]);
