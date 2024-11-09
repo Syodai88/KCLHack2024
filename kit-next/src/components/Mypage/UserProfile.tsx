@@ -10,6 +10,7 @@ import UserProfileEdit from './UserProfileEdit';
 import { useAuth } from '@/context/AuthContext';
 import Loading from '../common/Loading';
 import { FaEdit } from 'react-icons/fa';
+import PostCard from '../common/Postcard';
 
 interface Profile {
   name: string;
@@ -123,21 +124,41 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
             setIsEditing={setIsEditing}
             />
         ) : (
-            <>
-            <div className={styles.profileInfo}>
-                <p>
-                    <strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}
-                    <span className={styles.separator}> | </span>
-                    <strong>所属:</strong> {profile.department}
-                </p>
-                <div className={styles.otherInfo}>
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-                        rehypePlugins={[rehypeKatex]}
-                        className={styles.markdown}
-                    >
-                        {profile.other || '情報がありません。'}
-                    </ReactMarkdown>
+            <div className={styles.contentContainer}>
+                <div className={styles.profileInfo}>
+                    <p>
+                        <strong>卒業年度:</strong> {calculateGraduationYear(profile.year)}
+                        <span className={styles.separator}> | </span>
+                        <strong>所属:</strong> {profile.department}
+                    </p>
+                    <div className={styles.otherInfo}>
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+                            rehypePlugins={[rehypeKatex]}
+                            className={styles.markdown}
+                        >
+                            {profile.other || '情報がありません。'}
+                        </ReactMarkdown>
+                    </div>
+                </div>
+                {/* 投稿一覧 */}
+                <div className={styles.postsSection}>
+                    <h2>投稿一覧</h2>
+                    <PostCard postId={'1'} currentUserId={'1'} />
+                    <PostCard postId={'2'} currentUserId={'2'} />
+                    {posts.length > 0 ? (
+                    <ul className={styles.postList}>
+                        {posts.map((post) => (
+                        <li key={post.id} className={styles.postItem}>
+                            <a href={`/posts/${post.id}`} className={styles.postLink}>
+                            {post.title}
+                            </a>
+                        </li>
+                        ))}
+                    </ul>
+                    ) : (
+                    <p>投稿がありません。</p>
+                    )}
                 </div>
             </div>
             {/* 投稿一覧 */}
