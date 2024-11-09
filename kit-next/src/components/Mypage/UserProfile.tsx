@@ -161,24 +161,6 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
                     )}
                 </div>
             </div>
-            {/* 投稿一覧 */}
-            <div className={styles.postsSection}>
-                <h2>投稿一覧</h2>
-                {posts.length > 0 ? (
-                <ul className={styles.postList}>
-                    {posts.map((post) => (
-                    <li key={post.id} className={styles.postItem}>
-                        <a href={`/posts/${post.id}`} className={styles.postLink}>
-                        {post.title}
-                        </a>
-                    </li>
-                    ))}
-                </ul>
-                ) : (
-                <p>投稿がありません。</p>
-                )}
-            </div>
-            </>
         )}
     </div>
   );
