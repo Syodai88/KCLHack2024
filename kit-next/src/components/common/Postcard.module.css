@@ -1,0 +1,110 @@
+/* PostCard.module.css */
+.card {
+    font-family: 'Roboto', 'sans-serif';
+    margin-bottom: 24px;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: none;
+    border: 1px solid #ccc; /* ボーダーをやや濃くして区切りを明確に */
+    transition: box-shadow 0.3s;
+    background-color: #fff;
+  }
+  
+  .card:hover {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  
+  .subtitle {
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  .postDate {
+    margin-bottom: 16px;
+    color: #999;
+  }
+  
+  .content {
+    margin-bottom: 16px;
+  }
+  
+  .readMore {
+    color: #1976d2;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .actionButtons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px; /* 上部にマージンを追加して要素間を明確に */
+    border-top: 1px solid #eee; /* アクション部分と本文を区切る線を追加 */
+    padding-top: 16px; /* 境界線とボタンの間にスペースを追加 */
+  }
+  
+  .reactionButtons {
+    display: flex;
+    gap: 12px; /* ボタン間のスペースを調整 */
+  }
+  
+  .button {
+    background-color: #f0f0f0; /* ボタンの背景色を調整 */
+    color: #333; /* テキスト色を濃くして視認性を向上 */
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px; /* ボタンの角を丸く */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .button:hover {
+    background-color: #e0e0e0; /* ホバー時の背景色を調整 */
+    transform: translateY(-2px);
+  }
+  
+  .liked {
+    background-color: #e74c3c;
+    color: #fff; /* いいねされたときのテキスト色を白に */
+  }
+  
+  .liked:hover {
+    background-color: #c0392b;
+  }
+  
+  .detailButton {
+    background-color: #6a1b9a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .detailButton:hover {
+    background-color: #4a148c;
+    transform: translateY(-2px);
+  }
+  

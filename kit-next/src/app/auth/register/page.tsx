@@ -1,9 +1,19 @@
 "use client";
+import { useEffect } from 'react';
 import Form from '../../../components/auth/Form'
 import { motion } from 'framer-motion'
 import Footer from '@/components/common/Footer';
+import { getAuth, signOut } from 'firebase/auth';
 
 const Register: React.FC = () => {
+  useEffect(() =>{
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      console.log('Signed out!');
+    }).catch((error) => {
+      console.error('Error signing out:', error);
+    });
+  });
   return (
     <>
       <motion.div

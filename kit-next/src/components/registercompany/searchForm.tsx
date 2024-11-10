@@ -4,10 +4,11 @@ import { useState } from 'react';
 
 interface SearchFormProps {
   onSearch: (query: string) => void;
+  placeholder?: string;
 }
 
 //query(企業名)を入力フォームから受け取って、onSearch関数(ページ側で設定するAPI)に渡す
-const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
+const SearchForm: React.FC<SearchFormProps> = ({ onSearch, placeholder }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = () => {
@@ -27,7 +28,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyPress}
-        placeholder="Enter company name"
+        placeholder={placeholder ||"Enter company name"}
         className="flex-grow px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-primary text-black"
       />
       <button

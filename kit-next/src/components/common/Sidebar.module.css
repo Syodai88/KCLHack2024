@@ -1,0 +1,70 @@
+.avatarContainer {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.avatar {
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+.nickname {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 25px;
+}
+
+.linkList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* リンク間の余白 */
+}
+
+.link {
+    background-color: #DFDFDF;
+    color: #000;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+.link:hover {
+    background-color: #EB8686;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.plusButton {
+    background-color: #1DA1F2; /* Twitterのような青色 */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50%; /* 丸いボタンにする */
+    width: 60px; /* ボタンのサイズ */
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-top: 120px;
+    font-size: 1.6rem;
+}
+
+.plusButton:hover {
+    background-color: #0d8bd7; /* ホバー時の色を少し濃くする */
+    transform: scale(1.1); /* ホバー時に少し拡大 */
+}

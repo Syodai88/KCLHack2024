@@ -1,0 +1,81 @@
+.actionButtons {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px; 
+  }
+  
+  .reactionButtons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .button {
+    background-color: #DFDFDF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+    margin-left: auto; 
+  }
+  
+  .button svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .button:hover {
+        transform: translateY(-2px);
+    }
+    
+    .interested {
+        background-color: #E74C3C;
+    }
+    
+    .interested:hover {
+        background-color: #C0392B;
+    }
+    
+    .interned {
+        background-color: #3498DB;
+    }
+    
+    .interned:hover {
+        background-color: #2980B9;
+    }
+    
+    .attendedEvent {
+        background-color: #28A745;
+    }
+    
+    .attendedEvent:hover {
+        background-color: #218838;
+    }
+    .detailButton {
+        background-color: #6A1B9A;
+        color: #FFFFFF;
+        border: 1px solid #0056b3;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9em;
+        font-weight: bold;
+        transition: background-color 0.3s, transform 0.2s ease-in-out, border-color 0.3s;
+        margin-left: auto;
+    }
+    
+    .detailButton:hover {
+        background-color: #4A148C;
+        border-color: #004494;
+        transform: translateY(-2px);
+    }
