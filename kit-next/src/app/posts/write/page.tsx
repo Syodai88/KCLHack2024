@@ -12,7 +12,6 @@ const PostWrite: React.FC = () => {
   // 入力値を管理するステートを追加
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-
   // バリデーション情報を仮のオブジェクトで設定
   const validation = { error: false, message: '' }; // バリデーションを追加する場合は適宜変更
 
