@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
 import { TextField, Box, Autocomplete, Chip, Stack, Button, Typography } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
@@ -10,12 +10,14 @@ import remarkBreaks from 'remark-breaks';
 import rehypeKatex from 'rehype-katex';
 import styles from './PostWrite.module.css';
 import 'katex/dist/katex.min.css';
+import SplitPage from '@/components/common/SplitPage';
+import Sidebar from '@/components/common/Sidebar';
 
-interface PostWriteProps {
+interface PostEditProps {
   selectedCompanyName?: string;
 }
 
-const PostWrite: React.FC<PostWriteProps> = ({ selectedCompanyName }) => {
+const PostEdit: React.FC<PostEditProps> = ({ selectedCompanyName }) => {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -207,4 +209,19 @@ const PostWrite: React.FC<PostWriteProps> = ({ selectedCompanyName }) => {
   );
 };
 
+const PostWrite: React.FC = () => {
+  const params = useParams(); // useParamsからパラメータを取得
+  let companyName = params?.companyName;
+
+  // companyIdが配列である場合、最初の要素を使用
+  if (Array.isArray(companyName)) {
+    companyName = companyName[0];
+  }
+
+  return (
+    <SplitPage sidebar={<Sidebar />}>
+      <PostEdit selectedCompanyName={companyName} /> 
+    </SplitPage>
+  );
+};
 export default PostWrite;
