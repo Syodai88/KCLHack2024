@@ -111,7 +111,15 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
         {!isEditing && (//編集中の時はアイコンと名前を消す
             <div className={styles.profileHeader}>
                 <div className={styles.leftSection}>
-                    <Avatar className={styles.avatar} src={profile.profileImage} alt="プロフィール画像" />
+                    <Avatar 
+                      sx={{
+                        width: 100,
+                        height: 100,
+                        transition: 'transform 0.3s ease',
+                      }}
+                      src={profile.profileImage} 
+                      alt="プロフィール画像" 
+                    />
                     <h1 className={styles.profileName}>{profile.name}</h1>
                 </div>
                 {loggedInUserId === userId &&(//自分のページのみ編集可能

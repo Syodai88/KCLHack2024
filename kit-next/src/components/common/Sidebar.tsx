@@ -52,18 +52,19 @@ const Sidebar: React.FC<SidebarProps> = ({companyName}) => {
     return (
         <div className="p-5 bg-white h-full overflow-y-auto">
             <div className={styles.avatarContainer} onClick={handleAvatarClick}>
-                <Avatar className={styles.avatar}>
-                    {loading ? (
-                        <RxAvatar size={50} />
-                    ) : imageUrl ? (
-                        <img
-                            src={imageUrl}
-                            alt="プロフィール画像"
-                            className={styles.avatar}
-                        />
-                    ) : (
-                        <RxAvatar size={50} />
-                    )}
+                <Avatar
+                    src={imageUrl || undefined}
+                    alt="プロフィール画像"
+                    sx={{
+                        width: 100,
+                        height: 100,
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                            transform: 'scale(1.1)',
+                        },
+                    }}
+                >
+                    {(!imageUrl || loading) && <RxAvatar size={50} />}
                 </Avatar>
                 {nickname && <span className={styles.nickname}>{nickname}</span>}
             </div>
