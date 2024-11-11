@@ -1,227 +1,167 @@
-"use client";
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
-import { TextField, Box, Autocomplete, Chip, Stack, Button, Typography } from '@mui/material';
+import { TextField, Box, Autocomplete, Button, Typography, Stack, Chip, Divider } from '@mui/material';
+import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import remarkBreaks from 'remark-breaks';
 import rehypeKatex from 'rehype-katex';
+import remarkBreaks from 'remark-breaks';
 import styles from './PostWrite.module.css';
-import 'katex/dist/katex.min.css';
-import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
+import SplitPage from '@/components/common/SplitPage';
+import Loading from '@/components/common/Loading';
 
-interface PostEditProps {
-  selectedCompanyName?: string;
+interface CompanyData {
+  corporateNumber: string;
+  name: string;
 }
 
-const PostEdit: React.FC<PostEditProps> = ({ selectedCompanyName }) => {
+const PostWrite: React.FC = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
-
-  // 入力値を管理するステート
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const searchParams = useSearchParams();
+  const [loadingState, setLoadingState] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>('');
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
   const [title, setTitle] = useState<string>('');
   const [body, setBody] = useState<string>('');
-  const [companyName, setCompanyName] = useState<string>('');
-  const [isCompanyNameEditable, setIsCompanyNameEditable] = useState<boolean>(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isPreview, setIsPreview] = useState<boolean>(false);
+  const [postDate, setPostDate] = useState<string>('');
+  const [errors, setErrors] = useState({
+    companyName: '',
+    title: '',
+    body: '',
+  });
 
-  // タグの選択肢
-  const tags = [
-    { name: '本選考' },
-    { name: 'インターン' },
-    { name: '春' },
-    { name: '夏' },
-    { name: '秋' },
-    { name: '冬' },
-    { name: 'その他' },
-  ];
+  const tags = ['本選考', 'インターン', '春', '夏', '秋', '冬', 'その他'];
+  const initialCompanyName = searchParams.get('companyName');
 
-  // 企業のリスト（例）
-  const companies = [
-    { id: 'company1', name: '企業A' },
-    { id: 'company2', name: '企業B' },
-    { id: 'company3', name: '企業C' },
-  ];
-
-  // ログインしていない場合、ログインページにリダイレクト
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      setLoadingState("Warning");
+      setTimeout(() => {
+        setLoadingState(null);
+        router.push('/');
+      }, 3000);
     }
   }, [loading, user, router]);
 
-  // 企業名の初期設定
   useEffect(() => {
-    if (selectedCompanyName) {
-      setCompanyName(selectedCompanyName);
-      setIsCompanyNameEditable(false); // 編集不可
-    } else {
-      setIsCompanyNameEditable(true); // 編集可能
+    if (initialCompanyName) {
+      fetchCompanies(initialCompanyName);
     }
-  }, [selectedCompanyName]);
+  }, [initialCompanyName]);
 
-  // タグ変更時の処理
+  useEffect(() => {
+    const today = new Date().toLocaleDateString();
+    setPostDate(today);
+  }, []);
+
+  const fetchCompanies = async (name: string) => {
+    try {
+      const response = await axios.get('/api/fetchDbCompanyId', { params: { name } });
+      setCompanies(response.data.results);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+    }
+  };
+
+  const handleCompanySelect = (event: any, value: string | null) => {
+    setCompanyName(value || '');
+    setErrors({ ...errors, companyName: '' });
+  };
+
+  const handleInputChange = async (event: any, value: string) => {
+    if (value) {
+      await fetchCompanies(value);
+    } else {
+      setCompanies([]);
+    }
+  };
+
   const handleTagChange = (event: any, newValue: string[]) => {
     setSelectedTags(newValue);
   };
 
-  // 保存処理（仮）
   const handleSave = () => {
-    alert('投稿が保存されました。');
+    if (!companyName) setErrors((prev) => ({ ...prev, companyName: '企業名を入力してください。' }));
+    if (!title) setErrors((prev) => ({ ...prev, title: 'タイトルを入力してください。' }));
+    if (!body) setErrors((prev) => ({ ...prev, body: '本文を入力してください。' }));
+
+    if (companyName && title && body) {
+      alert('投稿が保存されました。');
+    }
   };
 
-  return (
-    <Box className={styles.container}>
-      {!isPreview ? (
-        <>
-          {/* 企業名フィールド */}
-          {isCompanyNameEditable ? (
-            <Autocomplete
-              freeSolo
-              options={companies.map((company) => company.name)}
-              value={companyName}
-              onChange={(event, newValue) => setCompanyName(newValue || '')}
-              onInputChange={(event, newValue) => setCompanyName(newValue)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="企業名"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                />
-              )}
-              sx={{ width: '80%', backgroundColor: 'white' }}
-            />
-          ) : (
-            <TextField
-              fullWidth
-              label="企業名"
-              value={companyName}
-              disabled
-              InputLabelProps={{
-                shrink: true,
-                style: {
-                  fontWeight: 'bold',
-                  fontSize: '1.3rem',
-                },
-              }}
-              variant="outlined"
-              margin="normal"
-              sx={{
-                width: '80%',
-                backgroundColor: 'white',
-                '& .MuiInputBase-input.Mui-disabled': {
-                  color: '#000', // 無効化されていても文字色が薄くならないように
-                },
-              }}
-            />
-          )}
-
-          {/* タイトルフィールド */}
-          <TextField
-            fullWidth
-            label="タイトル"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            variant="outlined"
-            margin="normal"
-            sx={{ width: '80%', backgroundColor: 'white' }}
-          />
-
-          {/* タグフィールド */}
-          <Autocomplete
-            multiple
-            freeSolo
-            filterSelectedOptions
-            options={tags.map((tag) => tag.name)}
-            value={selectedTags}
-            onChange={handleTagChange}
-            sx={{ width: '80%', backgroundColor: 'white' }}
-            renderInput={(params) => (
-              <TextField {...params} label="タグを選択" variant="outlined" margin="normal" />
-            )}
-          />
-
-          {/* 本文フィールド */}
-          <TextField
-            fullWidth
-            label="本文"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            multiline
-            rows={10}
-            variant="outlined"
-            margin="normal"
-            sx={{ width: '80%', backgroundColor: 'white' }}
-          />
-
-          {/* ボタン */}
-          <Box className={styles.buttonContainer}>
-            <Button variant="contained" onClick={() => setIsPreview(true)} sx={{ marginRight: 2 }}>
-              プレビュー
-            </Button>
-          </Box>
-        </>
-      ) : (
-        <>
-          {/* プレビュー表示 */}
-          <Typography variant="h6" sx={{ marginTop: 2, width: '80%' }}>
-            企業名: {companyName}
-          </Typography>
-
-          <Typography variant="h4" sx={{ marginTop: 2, width: '80%' }}>
-            {title}
-          </Typography>
-
-          <Stack direction="row" spacing={1} sx={{ marginTop: 2, width: '80%' }}>
-            {selectedTags.map((tag, index) => (
-              <Chip key={index} label={tag} />
-            ))}
-          </Stack>
-
-          <Box className={styles.markdownContainer}>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-              rehypePlugins={[rehypeKatex]}
-              className={styles.markdown}
-            >
-              {body || '本文がありません。'}
-            </ReactMarkdown>
-          </Box>
-
-          {/* ボタン */}
-          <Box className={styles.buttonContainer}>
-            <Button variant="contained" onClick={() => setIsPreview(false)} sx={{ marginRight: 2 }}>
-              編集
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSave}>
-              保存
-            </Button>
-          </Box>
-        </>
-      )}
-    </Box>
-  );
-};
-
-const PostWrite: React.FC = () => {
-  const params = useParams(); // useParamsからパラメータを取得
-  let companyName = params?.companyName;
-
-  // companyIdが配列である場合、最初の要素を使用
-  if (Array.isArray(companyName)) {
-    companyName = companyName[0];
+  if (loadingState ==="Warning"){
+    return <Loading type={loadingState} message='No Login'/>;
   }
 
   return (
     <SplitPage sidebar={<Sidebar />}>
-      <PostEdit selectedCompanyName={companyName} /> 
+      {isPreview ? (
+        <Box className={styles.previewContainer}>
+          <Typography variant="h2" className={styles.previewTitle}>{title || 'タイトルが設定されていません'}</Typography>
+          <Typography variant="h5" className={styles.previewCompany}>企業名: {companyName || '企業名が設定されていません'}</Typography>
+          <Typography variant="body2" className={styles.previewDate}>投稿日: {postDate}</Typography>
+          <Divider sx={{ margin: '20px 0' }} />
+          <Stack direction="row" spacing={1} className={styles.tagContainer}>
+            {selectedTags.map((tag, index) => <Chip key={index} label={tag} className={styles.tag} />)}
+          </Stack>
+          <ReactMarkdown className={styles.markdown} remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]} rehypePlugins={[rehypeKatex]}>
+            {body || '本文がありません。'}
+          </ReactMarkdown>
+          <Box className={styles.buttonContainer}>
+            <Button variant="contained" color="success" onClick={handleSave}>保存</Button>
+            <Button variant="contained" color="secondary" onClick={() => setIsPreview(false)}>編集に戻る</Button>
+          </Box>
+        </Box>
+      ) : (
+        <Box className={styles.container}>
+          <Autocomplete
+            options={companies.map((company) => company.name)}
+            value={companyName}
+            onChange={handleCompanySelect}
+            onInputChange={handleInputChange}
+            renderInput={(params) => (
+              <TextField {...params} label="企業" variant="outlined" fullWidth error={!!errors.companyName} helperText={errors.companyName} sx={{ marginBottom: 3 }} />
+            )}
+          />
+          <TextField fullWidth label="タイトル" value={title} onChange={(e) => setTitle(e.target.value)} variant="outlined" error={!!errors.title} helperText={errors.title} sx={{ marginBottom: 3 }} />
+          <Autocomplete
+            multiple freeSolo filterSelectedOptions options={tags} value={selectedTags}
+            onChange={handleTagChange}
+            renderInput={(params) => <TextField {...params} label="タグを選択" variant="outlined" />}
+            sx={{ marginBottom: 3 }}
+          />
+          <TextField fullWidth label="本文" value={body} onChange={(e) => setBody(e.target.value)} multiline rows={10} variant="outlined" error={!!errors.body} helperText={errors.body} sx={{ marginBottom: 3 }} />
+          <Box className={styles.buttonContainer}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const newErrors = {
+                  companyName: companyName ? '' : '企業を選択してください。',
+                  title: title ? '' : 'タイトルを入力してください。',
+                  body: body ? '' : '本文を入力してください。',
+                };
+                setErrors(newErrors);
+                if (!Object.values(newErrors).some((error) => error !== '')) {
+                  setIsPreview(true);
+                }
+              }}
+            >
+              プレビュー
+            </Button>
+          </Box>
+        </Box>
+      )}
     </SplitPage>
   );
 };
+
 export default PostWrite;
