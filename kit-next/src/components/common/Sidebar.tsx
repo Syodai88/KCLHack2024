@@ -5,10 +5,12 @@ import Avatar from '@mui/material/Avatar';
 import { RxAvatar } from 'react-icons/rx';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.css'; 
-import { IconButton } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+    companyName?: string | null;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({companyName}) => {
     const router = useRouter();
     const { user } = useAuth();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -76,7 +78,8 @@ const Sidebar: React.FC = () => {
                     → 感想詳細ページ
                 </Link>
             </div>
-            <button className={styles.plusButton} onClick={() => router.push('/post-page')}>
+            {/*companyページからボタンを使った時だけ企業名を自動設定*/}
+            <button className={styles.plusButton} onClick={() => router.push(`/posts/write?companyName=${encodeURIComponent(companyName || '')}`)}>
                 +
             </button>
         </div>
