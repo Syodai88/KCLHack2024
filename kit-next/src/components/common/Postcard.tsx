@@ -71,7 +71,10 @@ const PostCard: React.FC<PostCardProps> = ({ postId, currentUserId }) => {
           {postData.title}
         </Typography>
         <Typography variant="subtitle1" color="text.primary" className={styles.subtitle}>
-          投稿者: {userHandleName} | 企業: {companyName}
+          企業: {companyName}
+        </Typography>
+        <Typography variant="subtitle1" color="text.primary" className={styles.subtitle}>
+          投稿者: {userHandleName}
         </Typography>
         <Typography variant="body2" color="text.secondary" className={styles.postDate}>
           投稿日: {new Date(postData.postDate).toLocaleDateString()}
