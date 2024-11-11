@@ -169,6 +169,7 @@ const PostWrite: React.FC = () => {
     if (selectedCompanyId && title && body) {
       const userId = user?.uid;
       const formattedTags = selectedTags.map(tag => tag);
+      setLoadingState("Loading");
       try {
         const response = await axios.post('/api/savePost', {
           userId,
@@ -181,20 +182,35 @@ const PostWrite: React.FC = () => {
         );
 
         if (response.status === 201) {
-          alert('投稿が保存されました');
-          router.push(`/posts/${response.data.postId}`);
+          setLoadingState("Success");
+          setTimeout(() => {
+            router.push(`/posts/${response.data.postId}`);
+            setLoadingState(null);
+          }, 1500);
         } else {
-          alert('投稿の保存に失敗しました');
+          setLoadingState("Error");
+          setTimeout(() => {
+            setLoadingState(null);
+          }, 3000);
         }
       } catch (error) {
+        setLoadingState("Error");
+        setTimeout(() => {
+          setLoadingState(null);
+        }, 3000);
         console.error('Error saving post:', error);
-        alert('サーバーエラーが発生しました');
       }
     }
   };
 
   if (loadingState ==="Warning"){
     return <Loading type={loadingState} message='No Login'/>;
+  }else if (loadingState ==="Loading"){
+    return <Loading message='Upload..'/>;
+  }else if (loadingState ==="Success"){
+    return <Loading message='Success'/>;
+  }else if (loadingState ==="Error"){
+    return <Loading type={loadingState} message='Error'/>;
   }
 
   return (
