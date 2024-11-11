@@ -37,7 +37,8 @@
 }
 
 .profileName {
-  font-size: 1.8em;
+  margin-left: 10px;
+  font-size: 1.6em;
   font-weight: bold;
   color: #000;
 }
@@ -83,7 +84,7 @@
   margin-top: 10px;
   font-size: 1em;
   color: #555;
-  background-color: #f9f9f9;
+  background-color: #f6f6f6;
   padding: 15px;
   border-radius: 8px;
 }

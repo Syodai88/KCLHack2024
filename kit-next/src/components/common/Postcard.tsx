@@ -4,7 +4,7 @@ import { Card, CardContent, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import styles from './PostCard.module.css';
+import styles from './Postcard.module.css';
 
 interface Post {
   id: string;
