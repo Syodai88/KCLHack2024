@@ -12,7 +12,7 @@ import type { Company } from '@/interface/interface';
 import Loading from '@/components/common/Loading';
 
 
-const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
+const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null) => void  }> = ({ companyId,setCompanyName }) => {
   const { user } = useAuth();
   const [company, setCompany] = useState<Company | null>(null);
   const [isInterested, setIsInterested] = useState(false);
@@ -39,6 +39,7 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
         setCurrentInterestCount(companyData.interestedCount);
         setCurrentInternCount(companyData.internCount);
         setCurrentEventJoinCount(companyData.eventJoinCount);
+        setCompanyName(companyData.name); // 投稿ページに企業名を渡すため
         setIsLoading(null);
       } catch (error) {
         setIsLoading("Error");
@@ -46,7 +47,7 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
       }
     };
     fetchCompanyData();
-  }, [companyId]);
+  }, [companyId,setCompanyName]);
 
   useEffect(() => {
     const userId = user?.uid;
@@ -208,6 +209,7 @@ const Company: React.FC<{ companyId: string }> = ({ companyId }) => {
 const CompanyPage: React.FC = () => {
   const params = useParams(); // useParamsからパラメータを取得
   let companyId = params?.companyId;
+  const [companyName, setCompanyName] = useState<string | null>(null);//sidebarに渡すため
 
   // companyIdが配列である場合、最初の要素を使用
   if (Array.isArray(companyId)) {
@@ -215,8 +217,10 @@ const CompanyPage: React.FC = () => {
   }
 
   return (
-    <SplitPage sidebar={<Sidebar />}>
-      <Company companyId={companyId} /> 
+    <SplitPage 
+      sidebar={<Sidebar companyName={companyName}/>}
+    >
+      <Company companyId={companyId} setCompanyName={setCompanyName} /> 
     </SplitPage>
   );
 };
