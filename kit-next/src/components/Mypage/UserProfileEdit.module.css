@@ -62,11 +62,6 @@
   cursor: pointer;
 }
 
-.avatar {
-  width: 100px;
-  height: 100px;
-}
-
 .overlay {
   position: absolute;
   bottom: 0;
