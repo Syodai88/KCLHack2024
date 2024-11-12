@@ -21,6 +21,12 @@ export interface Company{
     userInterest: boolean;
     userIntern: boolean;
     userEventJoin: boolean;
+
+    reactions?: {
+        isInterested: boolean;
+        isInterned: boolean;
+        isEventJoined: boolean;
+    };
 }
 
 export interface Posts{
