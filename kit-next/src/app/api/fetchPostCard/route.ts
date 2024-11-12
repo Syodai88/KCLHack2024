@@ -2,16 +2,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: Request) {
-  const { userId, companyId, loginUserId } = await request.json();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get('userId');
+  const companyId = searchParams.get('companyId');
+  const loginUserId = searchParams.get('loginUserId');
 
-  // パラメータのバリデーション
-  if (!loginUserId) {
-    return NextResponse.json({ error: 'loginUserId is required' }, { status: 400 });
+  // パラメータのバリデーション: userId または companyId のどちらかが必要
+  if (!loginUserId || (!userId && !companyId)) {
+    return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
   }
 
   try {
-    // フィルタリング条件を動的に構築、Userごとの投稿 or Companyごとの投稿
+    // クエリ条件を設定
     const whereClause: any = {};
     if (userId) {
       whereClause.userId = userId;
@@ -20,7 +23,7 @@ export async function POST(request: Request) {
       whereClause.companyId = companyId;
     }
 
-    // 投稿の取得
+    // 投稿を取得
     const posts = await prisma.post.findMany({
       where: whereClause,
       include: {
@@ -50,15 +53,17 @@ export async function POST(request: Request) {
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
       likeCount: post.likeCount,
-      isLiked: post.likes.length > 0, // ログインユーザーがいいねしているか
+      isLiked: post.likes.length > 0,
       user: {
         id: post.user.id,
         name: post.user.name,
       },
-      company: {
-        id: post.company.corporateNumber,
-        name: post.company.name,
-      },
+      company: post.company
+        ? {
+            id: post.company.corporateNumber,
+            name: post.company.name,
+          }
+        : null,
       tags: post.postTags.map((postTag) => ({
         id: postTag.tag.id,
         name: postTag.tag.name,
