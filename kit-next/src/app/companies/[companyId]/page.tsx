@@ -10,6 +10,9 @@ import SplitPage from '@/components/common/SplitPage';
 import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/interface/interface';
 import Loading from '@/components/common/Loading';
+import axios from 'axios';
+import { Tag,Post } from '@/interface/interface';
+import PostCard from '@/components/common/Postcard';
 
 
 const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null) => void  }> = ({ companyId,setCompanyName }) => {
@@ -21,6 +24,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
   const [currentInterestCount, setCurrentInterestCount] = useState(0);
   const [currentInternCount, setCurrentInternCount] = useState(0);
   const [currentEventJoinCount, setCurrentEventJoinCount] = useState(0);
+  const [posts ,setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,6 +92,28 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
       fetchUserReactions();
     }
   }, [user, companyId]);
+
+  // 企業に紐づいた投稿を取得
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!user || !companyId) return;
+      try {
+        const response = await axios.get('/api/fetchPostCard', {
+          params: { companyId, loginUserId: user.uid },
+        });
+        if (response.status === 200) {
+          setPosts(response.data.posts);
+        } else {
+          console.error('投稿の取得に失敗しました');
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, [user, companyId]);
+
 
 
   const handleReactionClick = async (actionType: string) => {
@@ -200,7 +226,13 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
       {/* 投稿部分は以下に追加 */}
       <div className={styles.postsSection}>
         <h2>投稿一覧</h2>
-        {/* 投稿コンポーネントをここに表示 */}
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard key={post.id} post={post} loginUserId={user?.uid || ''} isLiked={post.isLiked} />
+          ))
+        ) : (
+          <p>この企業に関連する投稿はありません。</p>
+        )}
       </div>
     </div>
   );
