@@ -41,6 +41,7 @@ interface Post {
     name: string;
   };
   tags: Tag[];
+  isLiked: boolean;
 }
 
 const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
@@ -53,7 +54,7 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
     profileImage: '',
   });
   const [posts, setPosts] = useState<Post[]>([]);
-  const loggedInUserId = useAuth().user?.uid;
+  const loggedInUserId = useAuth().user?.uid || '';
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // ユーザーデータを取得
@@ -77,22 +78,33 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
     getUserData();
   }, [userId]);
 
-  // ユーザーの投稿を取得（仮のデータを使用）
+  // ユーザーの投稿を取得、現在ログイン中のユーザーのリアクションの有無も取得
   useEffect(() => {
-    const fetchUserPosts = async () => {
+    const fetchPosts = async () => {
       try {
-        const response = await fetch(`/api/fetchPostCard?userId=${userId}`);
+        const response = await fetch('/api/fetchPostCard', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, loginUserId: loggedInUserId }),
+        });
+
         if (!response.ok) {
           throw new Error('投稿の取得に失敗しました');
         }
         const data = await response.json();
         setPosts(data.posts);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching posts:', error);
       }
     };
-    fetchUserPosts();
-  }, [userId]); 
+
+    if (loggedInUserId) {
+      fetchPosts();
+    }
+  }, [userId, loggedInUserId]);
+
 
   const calculateGraduationYear = (year: string): string => {
     const currentYear = new Date().getFullYear();
@@ -177,7 +189,7 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
                     <h2>投稿一覧</h2>
                     {posts.map((post) => (
                       //postに渡すデータの確認
-                      <PostCard key={post.id} post={post} />
+                      <PostCard key={post.id} post={post} loginUserId={loggedInUserId} isLiked={post.isLiked}/>
                     ))}
                     {posts.length > 0 && (
                       <p>投稿がありません。</p> 
