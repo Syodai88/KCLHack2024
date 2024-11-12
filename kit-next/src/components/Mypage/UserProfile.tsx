@@ -11,6 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 import Loading from '../common/Loading';
 import { FaEdit } from 'react-icons/fa';
 import PostCard from '../common/Postcard';
+import axios from 'axios';
+import { Tag,Post } from '@/interface/interface';
 
 interface Profile {
   name: string;
@@ -18,30 +20,6 @@ interface Profile {
   department: string;
   other: string;
   profileImage: string;
-}
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  userId: string;
-  companyId: string;
-  likeCount: number;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string;
-  };
-  company: {
-    id: string;
-    name: string;
-  };
-  tags: Tag[];
-  isLiked: boolean;
 }
 
 const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
@@ -82,19 +60,15 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/fetchPostCard', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId, loginUserId: loggedInUserId }),
+        const response = await axios.get('/api/fetchPostCard', {
+          params: { userId, loginUserId: loggedInUserId },
         });
 
-        if (!response.ok) {
-          throw new Error('投稿の取得に失敗しました');
+        if (response.status === 200) {
+          setPosts(response.data.posts);
+        }else{
+          console.error('投稿の取得に失敗しました');
         }
-        const data = await response.json();
-        setPosts(data.posts);
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
