@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import styles from './PostCard.module.css';
+import axios from 'axios';
 
 interface Tag {
     id: number;
@@ -29,20 +30,37 @@ interface Post {
 }
 interface PostCardProps {
     post: Post;
+    loginUserId : string;
+    isLiked: boolean;
 }
-const PostCard: React.FC<PostCardProps> = ({ post }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isLikeState, setIsLikeState] = useState<boolean>(isLiked);
   const [currentLikeCount, setCurrentLikeCount] = useState<number>(post.likeCount);
 
   const handleCardClick = () => {
     router.push(`/posts/${post.id}`);
   };
 
-  const handleLikeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLikeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setIsLiked((prev) => !prev);
-    setCurrentLikeCount((prevCount) => (isLiked ? prevCount - 1 : prevCount + 1));
+    try {
+        // いいね API の呼び出し
+        const response = await axios.post('/api/postReaction', {
+          postId: post.id,
+          userId: loginUserId, // ログイン中のユーザーのIDを渡す
+        });
+  
+        if (response.data.likeAdded) {
+          setIsLikeState(true);
+          setCurrentLikeCount((prev) => prev + 1);
+        } else {
+          setIsLikeState(false);
+          setCurrentLikeCount((prev) => prev - 1);
+        }
+      } catch (error) {
+        console.error('いいねの更新に失敗しました:', error);
+      }
   };
 
   const contentSnippet = post.content.slice(0, 100); // 最初の100文字を表示
@@ -75,8 +93,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       </CardContent>
       <div className={styles.actionButtons}>
         <div className={styles.reactionButtons}>
-          <button onClick={handleLikeClick} className={`${styles.button} ${isLiked ? styles.liked : ''}`}>
-            {isLiked ? <FaHeart /> : <FaRegHeart />}
+          <button onClick={handleLikeClick} className={`${styles.button} ${isLikeState ? styles.liked : ''}`}>
+            {isLikeState ? <FaHeart /> : <FaRegHeart />}
             いいね {currentLikeCount}
           </button>
           <button onClick={handleCardClick} className={styles.detailButton}>
