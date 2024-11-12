@@ -1,3 +1,4 @@
+//機能をまとめたAPIを作成したので削除予定、本番環境移行前に削除する
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 

@@ -1,3 +1,4 @@
+//各ユーザーが各企業のリアクションをしているか判定するAPI
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 

@@ -5,21 +5,11 @@
     cursor: pointer;
 }
 
-.avatar {
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    transition: transform 0.3s ease;
-}
-
-.avatar:hover {
-    transform: scale(1.05);
-}
-
 .nickname {
     font-weight: bold;
     font-size: 0.9rem;
     margin-left: 25px;
+    color: #000;
 }
 
 .linkList {

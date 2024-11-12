@@ -21,22 +21,37 @@ export interface Company{
     userInterest: boolean;
     userIntern: boolean;
     userEventJoin: boolean;
-}
 
-export interface Posts{
-    id: number; 
-    userId: string; // 投稿者のユーザーID
-    companyId: string; // 投稿先の企業の法人番号
-    title: string; // 投稿のタイトル
-    content: string; // 投稿の内容
-    createdAt: string; // 作成日時
-    updatedAt: string; // 更新日時
-    likeCount: number; // いいね数のキャッシュ
+    reactions?: {
+        isInterested: boolean;
+        isInterned: boolean;
+        isEventJoined: boolean;
+    };
 }
 
 export interface Tag {
-    id: number; // タグのID
-    name: string; // タグの名前
+    id: number;
+    name: string;
+}
+  
+export interface Post {
+    id: number;
+    title: string;
+    content: string;
+    userId: string;
+    companyId: string;
+    likeCount: number;
+    createdAt: string;
+    user: {
+      id: string;
+      name: string;
+    };
+    company: {
+      id: string;
+      name: string;
+    };
+    tags: Tag[];
+    isLiked: boolean;
 }
   
 export interface Comment {

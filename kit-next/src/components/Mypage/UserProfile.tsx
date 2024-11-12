@@ -11,6 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 import Loading from '../common/Loading';
 import { FaEdit } from 'react-icons/fa';
 import PostCard from '../common/Postcard';
+import axios from 'axios';
+import { Tag,Post } from '@/interface/interface';
 
 interface Profile {
   name: string;
@@ -20,12 +22,7 @@ interface Profile {
   profileImage: string;
 }
 
-interface PostTitle {
-  id: string;
-  title: string;
-}
-
-const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
+const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [profile, setProfile] = useState<Profile>({
     name: '',
@@ -34,8 +31,8 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
     other: '',
     profileImage: '',
   });
-  const [posts, setPosts] = useState<PostTitle[]>([]);
-  const loggedInUserId = useAuth().user?.uid;
+  const [posts, setPosts] = useState<Post[]>([]);
+  const loggedInUserId = useAuth().user?.uid || '';
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // ユーザーデータを取得
@@ -59,22 +56,29 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
     getUserData();
   }, [userId]);
 
-  // ユーザーの投稿を取得（仮のデータを使用）
+  // ユーザーの投稿を取得、現在ログイン中のユーザーのリアクションの有無も取得
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      const placeholderPosts = [
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-      ];
-      setPosts(placeholderPosts);
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get('/api/fetchPostCard', {
+          params: { userId, loginUserId: loggedInUserId },
+        });
+
+        if (response.status === 200) {
+          setPosts(response.data.posts);
+        }else{
+          console.error('投稿の取得に失敗しました');
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
     };
-    fetchUserPosts();
-  }, []);
+
+    if (loggedInUserId) {
+      fetchPosts();
+    }
+  }, [userId, loggedInUserId]);
+
 
   const calculateGraduationYear = (year: string): string => {
     const currentYear = new Date().getFullYear();
@@ -111,7 +115,15 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
         {!isEditing && (//編集中の時はアイコンと名前を消す
             <div className={styles.profileHeader}>
                 <div className={styles.leftSection}>
-                    <Avatar className={styles.avatar} src={profile.profileImage} alt="プロフィール画像" />
+                    <Avatar 
+                      sx={{
+                        width: 100,
+                        height: 100,
+                        transition: 'transform 0.3s ease',
+                      }}
+                      src={profile.profileImage} 
+                      alt="プロフィール画像" 
+                    />
                     <h1 className={styles.profileName}>{profile.name}</h1>
                 </div>
                 {loggedInUserId === userId &&(//自分のページのみ編集可能
@@ -149,20 +161,12 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 {/* 投稿一覧 */}
                 <div className={styles.postsSection}>
                     <h2>投稿一覧</h2>
-                    <PostCard postId={'1'} currentUserId={'1'} />
-                    <PostCard postId={'2'} currentUserId={'2'} />
-                    {posts.length > 0 ? (
-                    <ul className={styles.postList}>
-                        {posts.map((post) => (
-                        <li key={post.id} className={styles.postItem}>
-                            <a href={`/posts/${post.id}`} className={styles.postLink}>
-                            {post.title}
-                            </a>
-                        </li>
-                        ))}
-                    </ul>
-                    ) : (
-                    <p>投稿がありません。</p>
+                    {posts.map((post) => (
+                      //postに渡すデータの確認
+                      <PostCard key={post.id} post={post} loginUserId={loggedInUserId} isLiked={post.isLiked}/>
+                    ))}
+                    {posts.length > 0 && (
+                      <p>投稿がありません。</p> 
                     )}
                 </div>
             </div>

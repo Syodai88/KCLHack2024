@@ -231,7 +231,11 @@ const UserProfileEdit: React.FC<UserProfileEditProps> = ({ userId, profile, setP
                 <div className={styles.avatarContainer}>
                     <div className={styles.avatarWrapper} onClick={handleAvatarClick}>
                         <Avatar
-                            className={styles.avatar}
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                transition: 'transform 0.3s ease',
+                              }}
                             src={selectedImage || '/default-avatar.png'}
                             alt="プロフィール画像"
                         />

@@ -1,9 +1,9 @@
+//人気企業とその企業に対するユーザーのリアクションをまとめて取得するAPI
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get('name');
   const userId = searchParams.get('userId');
 
   if (!userId) {
@@ -11,26 +11,21 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 企業データを取得（クエリがある場合は部分一致検索）
-    const companies = query
-      ? await prisma.company.findMany({
-          where: { name: { contains: query, mode: 'insensitive' } },
-          orderBy: { interestedCount: 'desc' },
-        })
-      : await prisma.company.findMany({
-          orderBy: { interestedCount: 'desc' },
-        });
+    // 人気企業の取得
+    const topCompanies = await prisma.company.findMany({
+      orderBy: { interestedCount: 'desc' },
+      take: 3,
+    });
 
-    const companyIds = companies.map(company => company.corporateNumber);
+    const companyIds = topCompanies.map(company => company.corporateNumber);
 
-    // ユーザーのリアクション情報を一度に取得
+    // ユーザーのリアクション情報を取得
     const reactions = await prisma.$transaction([
       prisma.interest.findMany({ where: { userId, companyId: { in: companyIds } } }),
       prisma.intern.findMany({ where: { userId, companyId: { in: companyIds } } }),
       prisma.event.findMany({ where: { userId, companyId: { in: companyIds } } }),
     ]);
 
-    // リアクション情報を整理
     const reactionMap = companyIds.reduce((acc, companyId) => {
       acc[companyId] = {
         isInterested: reactions[0].some(r => r.companyId === companyId),
@@ -40,8 +35,7 @@ export async function GET(req: Request) {
       return acc;
     }, {} as Record<string, { isInterested: boolean; isInterned: boolean; isEventJoined: boolean }>);
 
-    // 企業情報にリアクション情報を追加
-    const companiesWithReactions = companies.map(company => ({
+    const companiesWithReactions = topCompanies.map(company => ({
       ...company,
       reactions: reactionMap[company.corporateNumber] || {
         isInterested: false,
