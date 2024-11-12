@@ -67,7 +67,7 @@ const PostDetailPage = () => {
       }
     };
     fetchPostData();
-  }, [postId]);
+  }, [postId,router]);
 
   const handleCommentSubmit = async () => {
     if (commentContent.trim() === '') return;
