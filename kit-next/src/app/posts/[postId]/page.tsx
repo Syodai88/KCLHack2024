@@ -60,7 +60,6 @@ const PostDetailPage = () => {
           const response = await axios.get(`/api/getPostComments/${postId}`);
           setPost(response.data.post);
           setComments(response.data.comments);
-          console.log(response.data.post);
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
           router.push('/404');
@@ -122,11 +121,11 @@ const PostDetailPage = () => {
             </div>
             <Divider className={styles.divider} />
             <ReactMarkdown
-            className={styles.markdownContent}
-            remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-            rehypePlugins={[rehypeKatex]}
+                className={styles.markdown}
+                remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+                rehypePlugins={[rehypeKatex]}
             >
-            {post.content}
+                {post.content}
             </ReactMarkdown>
         </div>
 
