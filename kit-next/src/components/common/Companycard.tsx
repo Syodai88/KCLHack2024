@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, Button, Grid, IconButton } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { Company } from '@/interface/interface';
 import { FaHeart, FaUserGraduate, FaCalendarCheck, FaInfoCircle } from 'react-icons/fa';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -10,6 +10,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import GroupIcon from '@mui/icons-material/Group';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import styles from './Companycard.module.css'; 
+import axios from 'axios';
 
 interface CompanyCardProps {
   company : Company,
@@ -22,38 +23,9 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, company }) => 
   const [currentInterestCount, setCurrentInterestCount] = useState(company.interestedCount);
   const [currentInternCount, setCurrentInternCount] = useState(company.internCount);
   const [currentEventJoinCount, setCurrentEventJoinCount] = useState(company.eventJoinCount);
-  const [isInterested, setIsInterested] = useState(false);
-  const [isInterned, setIsInterned] = useState(false);
-  const [isEventJoined, setIsEventJoined] = useState(false);
-
-  useEffect(() => {
-    const fetchUserReactions = async () => {
-      try {
-        const response = await fetch('/api/fetchUserReactions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId:userId, companyId:company.corporateNumber }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsInterested(data.isInterested);
-          setIsInterned(data.isInterned);
-          setIsEventJoined(data.isEventJoined);
-        } else {
-          console.error('Failed to fetch user reactions');
-        }
-      } catch (error) {
-        console.error('Error fetching user reactions:', error);
-      }
-    };
-
-    if (userId && company.corporateNumber) {
-      fetchUserReactions();
-    }
-  }, [userId, company.corporateNumber]);
+  const [isInterested, setIsInterested] = useState(company.reactions?.isInterested ?? false);
+  const [isInterned, setIsInterned] = useState(company.reactions?.isInterned ?? false);
+  const [isEventJoined, setIsEventJoined] = useState(company.reactions?.isEventJoined ?? false);
 
   const handleCardClick = () => {
     router.push(`/companies/${company.corporateNumber}`);
@@ -61,15 +33,13 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ userId, image, company }) => 
 
   const handleReactionClick = async (actionType: string) => {
     try {
-      const response = await fetch('/api/companyReaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ actionType:actionType, companyId:company.corporateNumber, userId:userId }),
+      const response = await axios.post('/api/companyReaction', {
+        actionType,
+        companyId: company.corporateNumber,
+        userId,
       });
   
-      if (response.ok) {
+      if (response.status === 200) {
         if (actionType === 'interest') {
           setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
           setIsInterested((prev) => !prev);
