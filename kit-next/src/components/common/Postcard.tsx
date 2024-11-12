@@ -86,7 +86,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
           {isContentTruncated && '...'}
         </Typography>
         {isContentTruncated && (
-          <Typography variant="body2" color="primary" className={styles.readMore}>
+          <Typography variant="body2" color="primary" className={styles.readMore} onClick={handleCardClick}>
             続きを読む
           </Typography>
         )}
