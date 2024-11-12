@@ -1,3 +1,4 @@
+//ユーザーが企業に対しての反応のカラムを追加、削除するAPI
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
