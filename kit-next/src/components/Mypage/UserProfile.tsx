@@ -19,13 +19,31 @@ interface Profile {
   other: string;
   profileImage: string;
 }
-
-interface PostTitle {
-  id: string;
-  title: string;
+interface Tag {
+  id: number;
+  name: string;
 }
 
-const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  userId: string;
+  companyId: string;
+  likeCount: number;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  company: {
+    id: string;
+    name: string;
+  };
+  tags: Tag[];
+}
+
+const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [profile, setProfile] = useState<Profile>({
     name: '',
@@ -34,7 +52,7 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
     other: '',
     profileImage: '',
   });
-  const [posts, setPosts] = useState<PostTitle[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const loggedInUserId = useAuth().user?.uid;
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -62,19 +80,19 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
   // ユーザーの投稿を取得（仮のデータを使用）
   useEffect(() => {
     const fetchUserPosts = async () => {
-      const placeholderPosts = [
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-        { id: '2', title: '二番目の投稿タイトル' },
-        { id: '1', title: '最初の投稿タイトル' },
-      ];
-      setPosts(placeholderPosts);
+      try {
+        const response = await fetch(`/api/fetchPostCard?userId=${userId}`);
+        if (!response.ok) {
+          throw new Error('投稿の取得に失敗しました');
+        }
+        const data = await response.json();
+        setPosts(data.posts);
+      } catch (error) {
+        console.error(error);
+      }
     };
     fetchUserPosts();
-  }, []);
+  }, [userId]); 
 
   const calculateGraduationYear = (year: string): string => {
     const currentYear = new Date().getFullYear();
@@ -157,20 +175,12 @@ const UserProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 {/* 投稿一覧 */}
                 <div className={styles.postsSection}>
                     <h2>投稿一覧</h2>
-                    <PostCard postId={'1'} currentUserId={'1'} />
-                    <PostCard postId={'2'} currentUserId={'2'} />
-                    {posts.length > 0 ? (
-                    <ul className={styles.postList}>
-                        {posts.map((post) => (
-                        <li key={post.id} className={styles.postItem}>
-                            <a href={`/posts/${post.id}`} className={styles.postLink}>
-                            {post.title}
-                            </a>
-                        </li>
-                        ))}
-                    </ul>
-                    ) : (
-                    <p>投稿がありません。</p>
+                    {posts.map((post) => (
+                      //postに渡すデータの確認
+                      <PostCard key={post.id} post={post} />
+                    ))}
+                    {posts.length > 0 && (
+                      <p>投稿がありません。</p> 
                     )}
                 </div>
             </div>
