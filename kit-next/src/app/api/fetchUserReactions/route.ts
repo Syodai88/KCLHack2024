@@ -1,4 +1,4 @@
-//compnayReactionで積み上げられたカラムを数えてキャッシュを更新するAPI、定期更新の予定
+//各ユーザーが各企業のリアクションをしているか判定するAPI
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
