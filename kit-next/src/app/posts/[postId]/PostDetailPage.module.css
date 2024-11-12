@@ -54,6 +54,16 @@
     margin-bottom: 15px;
   }
   
+  .userName {
+    color: #0070f3; /* 青色に設定 */
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .userName:hover {
+    text-decoration: none;
+  }
+  
   .markdownContainer {
     background-color: #ffffff;
     border-radius: 8px;

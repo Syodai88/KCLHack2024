@@ -13,6 +13,7 @@ import remarkBreaks from 'remark-breaks';
 import { Divider } from '@mui/material';
 import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
+import Link from 'next/link';
 
 interface Post {
   id: number;
@@ -67,7 +68,7 @@ const PostDetailPage = () => {
       }
     };
     fetchPostData();
-  }, [postId]);
+  }, [postId,router]);
 
   const handleCommentSubmit = async () => {
     if (commentContent.trim() === '') return;
@@ -116,8 +117,10 @@ const PostDetailPage = () => {
                 )}
             </div>
             <div className={styles.postMeta}>
-            <p>投稿者：{post.user.name}</p>
-            <p>{new Date(post.createdAt).toLocaleString()}</p>
+              <Link className={styles.userName} href={`/mypage/${post.user.id}`}>
+                投稿者：{post.user.name}
+              </Link>
+              <p>{new Date(post.createdAt).toLocaleString()}</p>
             </div>
             <Divider className={styles.divider} />
             <ReactMarkdown
