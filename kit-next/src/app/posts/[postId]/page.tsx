@@ -43,6 +43,9 @@ interface Comment {
   userId: string;
   content: string;
   createdAt: string;
+  user: {
+    name: string;
+  };
 }
 
 const PostDetailPage = () => {
@@ -156,7 +159,10 @@ const PostDetailPage = () => {
               <div key={comment.id} className={styles.comment}>
                 <p className={styles.commentContent}>{comment.content}</p>
                 <div className={styles.commentMeta}>
-                    {new Date(comment.createdAt).toLocaleString()}
+                    {new Date(comment.createdAt).toLocaleString()} | by
+                    <Link className={styles.userName} href={`/mypage/${post.user.id}`}>
+                      {post.user.name}
+                    </Link>
                 </div>
               </div>
           ))
