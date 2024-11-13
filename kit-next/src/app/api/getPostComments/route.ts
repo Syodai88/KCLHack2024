@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(
-  req: Request,
-  { params }: { params: { postId: string } }
-) {
-  const { postId } = params;
-
+export async function GET(req: NextRequest){
   try {
+    const { searchParams } = new URL(req.url);
+    const postId = searchParams.get('postId')
+    if(!postId){
+      return NextResponse.json({ error: 'postIdが指定されていません。' }, { status: 400 });
+    }
     // 投稿情報と関連するユーザー、企業、タグ情報の取得
     const post = await prisma.post.findUnique({
       where: {
@@ -59,7 +59,7 @@ export async function GET(
         name: post.company.name,
       },
       tags: post.postTags.map((postTag) => ({
-        id: postTag.tag.id,
+        id: Number(postTag.tag.id),
         name: postTag.tag.name,
       })),
     };
