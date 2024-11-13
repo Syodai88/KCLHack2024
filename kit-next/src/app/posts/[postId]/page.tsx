@@ -14,6 +14,8 @@ import { Divider } from '@mui/material';
 import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
 import Link from 'next/link';
+import { FiMessageCircle } from 'react-icons/fi';
+
 
 interface Post {
   id: number;
@@ -43,6 +45,7 @@ interface Comment {
   userId: string;
   content: string;
   createdAt: string;
+  parentId: number | null;
   user: {
     name: string;
   };
@@ -57,6 +60,12 @@ const PostDetailPage = () => {
   const [commentContent, setCommentContent] = useState('');
   const { user, loading } = useAuth();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [replyTo, setReplyTo] = useState<number | null>(null);
+
+  // リプライ用のコメントIDを設定
+  const handleReplyClick = (commentId: number) => {
+    setReplyTo(commentId);
+  };
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -67,6 +76,7 @@ const PostDetailPage = () => {
           });
           setPost(response.data.post);
           setComments(response.data.comments);
+          setReplyTo(null); 
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
           router.push('/404');
@@ -89,7 +99,7 @@ const PostDetailPage = () => {
           userId : user.uid,
           content: commentContent,
           postId: postId,
-          parentId: null,//後で追加処理
+          parentId: replyTo,
         },
       );
       console.log('Response:', response);
@@ -111,6 +121,16 @@ const PostDetailPage = () => {
     setSortOrder(newOrder);
     setComments([...comments].reverse());
   };
+
+  // 対象コメントにスクロール
+  const scrollToComment = (commentId: number) => {
+    const targetElement = document.getElementById(`comment-${commentId}`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+  
+  
 
   if (!post) {
     return <div>読み込み中...</div>;
@@ -156,13 +176,31 @@ const PostDetailPage = () => {
           <h2>コメント一覧</h2>
           {comments.length > 0 ? (
           comments.map((comment) => (
-              <div key={comment.id} className={styles.comment}>
-                <p className={styles.commentContent}>{comment.content}</p>
+              <div key={comment.id} className={styles.comment} id={`comment-${comment.id}`}>
+                <p className={styles.commentContent}>
+                  {comment.parentId && (
+                    <span
+                      className={styles.replyTo}
+                      onClick={() => scrollToComment(comment.parentId!)}
+                    >
+                      &lt;-{comment.parentId}
+                    </span>
+                  )}
+                  {comment.content}
+                </p>
                 <div className={styles.commentMeta}>
-                    <div className={styles.commentId}>Comment : {comment.id}</div>
+                    <div className={styles.commentId}>
+                      Comment : {comment.id}
+                    </div>
+                      <button
+                        className={styles.replyButton}
+                        onClick={() => setReplyTo(comment.id)}
+                      >
+                        <FiMessageCircle className={styles.replyIcon} />
+                      </button>
                     {new Date(comment.createdAt).toLocaleString()} | by
                     <Link className={styles.userName} href={`/mypage/${post.user.id}`}>
-                      {post.user.name}
+                      {comment.user.name}
                     </Link>
                 </div>
               </div>
@@ -173,6 +211,12 @@ const PostDetailPage = () => {
         </div>
         <div className={styles.commentInputContainer}>
           <h2>コメントを追加</h2>
+          {replyTo && (
+          <div className={styles.replyingTo}>
+            Reply to : {replyTo}{' '}
+            <button onClick={() => setReplyTo(null)}>キャンセル</button>
+          </div>
+          )}
           <textarea
             className={styles.commentTextarea}
             placeholder="コメントを入力してください"
