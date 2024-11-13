@@ -53,6 +53,7 @@ const PostDetailPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState('');
   const { user, loading } = useAuth();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -102,6 +103,12 @@ const PostDetailPage = () => {
     }
   };
 
+  const handleSortToggle = () => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortOrder(newOrder);
+    setComments([...comments].reverse());
+  };
+
   if (!post) {
     return <div>読み込み中...</div>;
   }
@@ -137,32 +144,37 @@ const PostDetailPage = () => {
                 {post.content}
             </ReactMarkdown>
         </div>
+        <div className={styles.sortButtonContainer}>
+          <button onClick={handleSortToggle}>
+            {sortOrder === 'asc' ? '新しい順' : '古い順'}
+          </button>
+        </div>
         <div className={styles.commentsContainer}>
-            <h2>コメント一覧</h2>
-            {comments.length > 0 ? (
-            comments.map((comment) => (
-                <div key={comment.id} className={styles.comment}>
-                  <p className={styles.commentContent}>{comment.content}</p>
-                  <div className={styles.commentMeta}>
-                      {new Date(comment.createdAt).toLocaleString()}
-                  </div>
+          <h2>コメント一覧</h2>
+          {comments.length > 0 ? (
+          comments.map((comment) => (
+              <div key={comment.id} className={styles.comment}>
+                <p className={styles.commentContent}>{comment.content}</p>
+                <div className={styles.commentMeta}>
+                    {new Date(comment.createdAt).toLocaleString()}
                 </div>
-            ))
-            ) : (
+              </div>
+          ))
+          ) : (
             <p className={styles.noComments}>まだコメントはありません。</p>
-            )}
+          )}
         </div>
         <div className={styles.commentInputContainer}>
-            <h2>コメントを追加</h2>
-            <textarea
-              className={styles.commentTextarea}
-              placeholder="コメントを入力してください"
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-            />
-            <button className={styles.commentButton} onClick={handleCommentSubmit}>
-              投稿
-            </button>
+          <h2>コメントを追加</h2>
+          <textarea
+            className={styles.commentTextarea}
+            placeholder="コメントを入力してください"
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
+          />
+          <button className={styles.commentButton} onClick={handleCommentSubmit}>
+            投稿
+          </button>
         </div>
       </div>
     </SplitPage>
