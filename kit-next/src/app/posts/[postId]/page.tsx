@@ -14,6 +14,8 @@ import { Divider } from '@mui/material';
 import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
 import Link from 'next/link';
+import { FiMessageCircle } from 'react-icons/fi';
+
 
 interface Post {
   id: number;
@@ -43,6 +45,10 @@ interface Comment {
   userId: string;
   content: string;
   createdAt: string;
+  parentId: number | null;
+  user: {
+    name: string;
+  };
 }
 
 const PostDetailPage = () => {
@@ -53,14 +59,24 @@ const PostDetailPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState('');
   const { user, loading } = useAuth();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [replyTo, setReplyTo] = useState<number | null>(null);
+
+  // リプライ用のコメントIDを設定
+  const handleReplyClick = (commentId: number) => {
+    setReplyTo(commentId);
+  };
 
   useEffect(() => {
     const fetchPostData = async () => {
       if (postId) {
         try {
-          const response = await axios.get(`/api/getPostComments/${postId}`);
+          const response = await axios.get('/api/getPostComments/',{
+            params: { postId: postId },
+          });
           setPost(response.data.post);
           setComments(response.data.comments);
+          setReplyTo(null); 
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
           router.push('/404');
@@ -78,23 +94,43 @@ const PostDetailPage = () => {
     }
 
     try {
-      const idToken = await user.getIdToken();
       const response = await axios.post(
-        `/api/posts/${postId}/comments`,
-        { content: commentContent },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
+        `/api/comments`,{ 
+          userId : user.uid,
+          content: commentContent,
+          postId: postId,
+          parentId: replyTo,
+        },
       );
-      setComments([...comments, response.data.comment]);
-      setCommentContent('');
+      console.log('Response:', response);
+      if(response.status === 201){
+        setComments([...comments, response.data.comment]);
+        setCommentContent('');
+      } else {
+        console.error('コメントの投稿に失敗しました:', response.data.error);
+        alert('コメントの投稿に失敗しました。');
+      }
     } catch (error) {
       console.error('コメントの投稿に失敗しました:', error);
       alert('コメントの投稿に失敗しました。');
     }
   };
+
+  const handleSortToggle = () => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortOrder(newOrder);
+    setComments([...comments].reverse());
+  };
+
+  // 対象コメントにスクロール
+  const scrollToComment = (commentId: number) => {
+    const targetElement = document.getElementById(`comment-${commentId}`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+  
+  
 
   if (!post) {
     return <div>読み込み中...</div>;
@@ -102,7 +138,7 @@ const PostDetailPage = () => {
 
   return (
     <SplitPage sidebar={<Sidebar />}>
-        <div className={styles.container}>
+      <div className={styles.container}>
         {/* ポストの表示 */}
         <div className={styles.postContainer}>
             <h1 className={styles.postTitle}>{post.title}</h1>
@@ -131,38 +167,67 @@ const PostDetailPage = () => {
                 {post.content}
             </ReactMarkdown>
         </div>
-
-        {/* コメント入力欄 */}
+        <div className={styles.sortButtonContainer}>
+          <button onClick={handleSortToggle}>
+            {sortOrder === 'asc' ? '新しい順' : '古い順'}
+          </button>
+        </div>
+        <div className={styles.commentsContainer}>
+          <h2>コメント一覧</h2>
+          {comments.length > 0 ? (
+          comments.map((comment) => (
+              <div key={comment.id} className={styles.comment} id={`comment-${comment.id}`}>
+                <p className={styles.commentContent}>
+                  {comment.parentId && (
+                    <span
+                      className={styles.replyTo}
+                      onClick={() => scrollToComment(comment.parentId!)}
+                    >
+                      &lt;-{comment.parentId}
+                    </span>
+                  )}
+                  {comment.content}
+                </p>
+                <div className={styles.commentMeta}>
+                    <div className={styles.commentId}>
+                      Comment : {comment.id}
+                    </div>
+                      <button
+                        className={styles.replyButton}
+                        onClick={() => setReplyTo(comment.id)}
+                      >
+                        <FiMessageCircle className={styles.replyIcon} />
+                      </button>
+                    {new Date(comment.createdAt).toLocaleString()} | by
+                    <Link className={styles.userName} href={`/mypage/${post.user.id}`}>
+                      {comment.user.name}
+                    </Link>
+                </div>
+              </div>
+          ))
+          ) : (
+            <p className={styles.noComments}>まだコメントはありません。</p>
+          )}
+        </div>
         <div className={styles.commentInputContainer}>
-            <h2>コメントを追加</h2>
-            <textarea
+          <h2>コメントを追加</h2>
+          {replyTo && (
+          <div className={styles.replyingTo}>
+            Reply to : {replyTo}{' '}
+            <button onClick={() => setReplyTo(null)}>キャンセル</button>
+          </div>
+          )}
+          <textarea
             className={styles.commentTextarea}
             placeholder="コメントを入力してください"
             value={commentContent}
             onChange={(e) => setCommentContent(e.target.value)}
-            ></textarea>
-            <button className={styles.commentButton} onClick={handleCommentSubmit}>
+          />
+          <button className={styles.commentButton} onClick={handleCommentSubmit}>
             投稿
-            </button>
+          </button>
         </div>
-
-        {/* コメント一覧 */}
-        <div className={styles.commentsContainer}>
-            <h2>コメント一覧</h2>
-            {comments.length > 0 ? (
-            comments.map((comment) => (
-                <div key={comment.id} className={styles.comment}>
-                <p className={styles.commentContent}>{comment.content}</p>
-                <div className={styles.commentMeta}>
-                    {new Date(comment.createdAt).toLocaleString()}
-                </div>
-                </div>
-            ))
-            ) : (
-            <p className={styles.noComments}>まだコメントはありません。</p>
-            )}
-        </div>
-        </div>
+      </div>
     </SplitPage>
   );
 };
