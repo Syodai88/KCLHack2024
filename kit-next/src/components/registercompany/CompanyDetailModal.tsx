@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import './CompanyDetailModal.css';
 
 interface CompanyDetailModalProps {
   show: boolean;
@@ -54,49 +55,39 @@ const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ show, onClose, 
   const details = companyDetails[0];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300">
-      <div
-        ref={modalRef}
-        className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full transform transition-transform duration-300 scale-100 relative"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900 w-8 h-8 rounded-full flex justify-center items-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          aria-label="Close"
-        >
-          <CloseIcon fontSize="small" /> 
-        </button>
+    <div className="modal-overlay">
+      <div ref={modalRef} className="company-detail-modal">
         
-        <h1 className="text-3xl font-bold mb-6 text-center border-b pb-4 text-gray-900">{details.name}</h1>
+        <h1 className="modal-title">{details.name}</h1>
         
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800">法人番号</h2>
-          <p className="pl-2 break-words bg-gray-100 p-2 rounded text-gray-700">{corporateNumber}</p>
+        <div className="modal-section">
+          <h2 className="modal-subtitle">法人番号</h2>
+          <p className="modal-content">{corporateNumber}</p>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800">所在地</h2>
-          <p className="pl-2 break-words bg-gray-100 p-2 rounded text-gray-700">{details.location}</p>
+        <div className="modal-section">
+          <h2 className="modal-subtitle">所在地</h2>
+          <p className="modal-content">{details.location}</p>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800">ホームページ</h2>
-          <p className="pl-2 break-words bg-gray-100 p-2 rounded">
-            <a href={details.company_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+        <div className="modal-section">
+          <h2 className="modal-subtitle">ホームページ</h2>
+          <p className="modal-content">
+            <a href={details.company_url} target="_blank" rel="noopener noreferrer">
               {details.company_url}
             </a>
           </p>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800">業務内容</h2>
-          <p className="pl-2 break-words bg-gray-100 p-2 rounded whitespace-pre-wrap text-gray-700">{details.business_summary}</p>
+        <div className="modal-section">
+          <h2 className="modal-subtitle">業務内容</h2>
+          <p className="modal-content">{details.business_summary}</p>
         </div>
 
-        <div className="flex justify-center mt-8">
+        <div className="modal-footer">
           <button
             onClick={onRegister}
-            className="px-8 py-3 bg-green-600 text-white text-lg font-semibold rounded hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="modal-register-button"
           >
             登録
           </button>
