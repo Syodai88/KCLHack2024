@@ -108,7 +108,7 @@ const PostDetailPage = () => {
 
   return (
     <SplitPage sidebar={<Sidebar />}>
-        <div className={styles.container}>
+      <div className={styles.container}>
         {/* ポストの表示 */}
         <div className={styles.postContainer}>
             <h1 className={styles.postTitle}>{post.title}</h1>
@@ -137,38 +137,34 @@ const PostDetailPage = () => {
                 {post.content}
             </ReactMarkdown>
         </div>
-
-        {/* コメント入力欄 */}
-        <div className={styles.commentInputContainer}>
-            <h2>コメントを追加</h2>
-            <textarea
-            className={styles.commentTextarea}
-            placeholder="コメントを入力してください"
-            value={commentContent}
-            onChange={(e) => setCommentContent(e.target.value)}
-            ></textarea>
-            <button className={styles.commentButton} onClick={handleCommentSubmit}>
-            投稿
-            </button>
-        </div>
-
-        {/* コメント一覧 */}
         <div className={styles.commentsContainer}>
             <h2>コメント一覧</h2>
             {comments.length > 0 ? (
             comments.map((comment) => (
                 <div key={comment.id} className={styles.comment}>
-                <p className={styles.commentContent}>{comment.content}</p>
-                <div className={styles.commentMeta}>
-                    {new Date(comment.createdAt).toLocaleString()}
-                </div>
+                  <p className={styles.commentContent}>{comment.content}</p>
+                  <div className={styles.commentMeta}>
+                      {new Date(comment.createdAt).toLocaleString()}
+                  </div>
                 </div>
             ))
             ) : (
             <p className={styles.noComments}>まだコメントはありません。</p>
             )}
         </div>
+        <div className={styles.commentInputContainer}>
+            <h2>コメントを追加</h2>
+            <textarea
+              className={styles.commentTextarea}
+              placeholder="コメントを入力してください"
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+            />
+            <button className={styles.commentButton} onClick={handleCommentSubmit}>
+              投稿
+            </button>
         </div>
+      </div>
     </SplitPage>
   );
 };
