@@ -224,7 +224,13 @@
   .commentMeta {
     font-size: 14px;
     color: #777;
-    text-align: right;
+    display: flex;
+    justify-content: space-between; /* 左右に分割配置 */
+  }
+  .commentId {
+    margin-right: auto; /* 左端に配置 */
+    font-weight: bold;
+    color: #0070f3; /* IDの色を青に */
   }
   
   .noComments {
