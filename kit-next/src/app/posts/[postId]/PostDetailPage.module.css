@@ -224,6 +224,7 @@
   .commentMeta {
     font-size: 14px;
     color: #777;
+    text-align: right;
   }
   
   .noComments {
