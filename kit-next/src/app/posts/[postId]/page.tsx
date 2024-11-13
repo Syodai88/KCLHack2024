@@ -58,7 +58,9 @@ const PostDetailPage = () => {
     const fetchPostData = async () => {
       if (postId) {
         try {
-          const response = await axios.get(`/api/getPostComments/${postId}`);
+          const response = await axios.get('/api/getPostComments/',{
+            params: { postId: postId },
+          });
           setPost(response.data.post);
           setComments(response.data.comments);
         } catch (err) {
@@ -78,18 +80,22 @@ const PostDetailPage = () => {
     }
 
     try {
-      const idToken = await user.getIdToken();
       const response = await axios.post(
-        `/api/posts/${postId}/comments`,
-        { content: commentContent },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
+        `/api/comments`,{ 
+          userId : user.uid,
+          content: commentContent,
+          postId: postId,
+          parentId: null,//後で追加処理
+        },
       );
-      setComments([...comments, response.data.comment]);
-      setCommentContent('');
+      console.log('Response:', response);
+      if(response.status === 201){
+        setComments([...comments, response.data.comment]);
+        setCommentContent('');
+      } else {
+        console.error('コメントの投稿に失敗しました:', response.data.error);
+        alert('コメントの投稿に失敗しました。');
+      }
     } catch (error) {
       console.error('コメントの投稿に失敗しました:', error);
       alert('コメントの投稿に失敗しました。');
