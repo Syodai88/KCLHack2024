@@ -181,6 +181,24 @@
   .commentButton:hover {
     background-color: #005bb5;
   }
+
+  .sortButtonContainer {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .sortButtonContainer button {
+    background-color: #64bcfc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .sortButtonContainer button:hover {
+    background-color: #58a7e0;
+  }
+  
   
   .commentsContainer {
     margin-top: 20px;
