@@ -18,12 +18,12 @@ const Navbar: React.FC = () => {
             <div>
               {user ? (
                 <span className="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">
-                  就活支援アプリ
+                  Kit Success
                 </span>
               ) : (
                 <Link href="/" className="flex items-center py-4 px-2">
                   <span className="font-semibold text-gray-500 text-lg">
-                    就活支援アプリ
+                    Kit Success
                   </span>
                 </Link>
               )}
