@@ -56,8 +56,8 @@ const Sidebar: React.FC<SidebarProps> = ({companyName}) => {
                     src={imageUrl || undefined}
                     alt="プロフィール画像"
                     sx={{
-                        width: 100,
-                        height: 100,
+                        width: 90,
+                        height: 90,
                         transition: 'transform 0.3s ease',
                         '&:hover': {
                             transform: 'scale(1.1)',
@@ -74,9 +74,6 @@ const Sidebar: React.FC<SidebarProps> = ({companyName}) => {
                 </Link>
                 <Link href="/registerCompany" className={styles.link}>
                     → 企業登録ページ
-                </Link>
-                <Link href="/details-page" className={styles.link}>
-                    → 感想詳細ページ
                 </Link>
             </div>
             {/*companyページからボタンを使った時だけ企業名を自動設定*/}

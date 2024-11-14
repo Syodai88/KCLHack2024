@@ -5,7 +5,7 @@ import {AuthProvider } from './../context/AuthContext'
 
 
 export const metadata: Metadata = {
-  title: '就活支援アプリ | 大学生の未来をサポート',
+  title: 'Kit Success | 大学生の未来をサポート',
   description: '大学生のための包括的な就活支援Webアプリケーション',
 }
 

@@ -161,12 +161,12 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
                 {/* 投稿一覧 */}
                 <div className={styles.postsSection}>
                     <h2>投稿一覧</h2>
-                    {posts.map((post) => (
-                      //postに渡すデータの確認
-                      <PostCard key={post.id} post={post} loginUserId={loggedInUserId} isLiked={post.isLiked}/>
-                    ))}
-                    {posts.length > 0 && (
-                      <p>投稿がありません。</p> 
+                    {posts.length > 0 ? (
+                      posts.map((post) => (
+                        <PostCard key={post.id} post={post} loginUserId={loggedInUserId} isLiked={post.isLiked} />
+                      ))
+                    ) : (
+                      <p>投稿がありません。</p>
                     )}
                 </div>
             </div>
