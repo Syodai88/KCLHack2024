@@ -22,7 +22,7 @@ interface Profile {
   profileImage: string;
 }
 
-const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
+const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [profile, setProfile] = useState<Profile>({
     name: '',
@@ -37,6 +37,9 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
 
   // ユーザーデータを取得
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
     const getUserData = async () => {
       try {
         setIsLoading(true);
@@ -58,8 +61,12 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
 
   // ユーザーの投稿を取得、現在ログイン中のユーザーのリアクションの有無も取得
   useEffect(() => {
+    if (!loggedInUserId || !userId){
+      return;
+    }
     const fetchPosts = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get('/api/fetchPostCard', {
           params: { userId, loginUserId: loggedInUserId },
         });
@@ -71,9 +78,10 @@ const UserProfile: React.FC<{ userId: string }> = async ({ userId }) => {
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     if (loggedInUserId) {
       fetchPosts();
     }
