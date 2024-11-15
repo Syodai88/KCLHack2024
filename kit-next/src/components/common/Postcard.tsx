@@ -76,7 +76,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
         });
         if (response.status === 200) {
           alert('投稿を削除しました。');
-          router.refresh
+          router.refresh();
         } else {
           alert('投稿の削除に失敗しました。');
         }
