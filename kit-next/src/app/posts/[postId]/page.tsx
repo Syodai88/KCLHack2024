@@ -163,7 +163,7 @@ const PostDetailPage = () => {
     }
   };
 
-  const handleDeleteClick = async () => {
+  const handleDeletePost = async (postId: number) => {
     if (!user ||!post) {
       return;
     }
@@ -172,15 +172,16 @@ const PostDetailPage = () => {
     }
     if (confirm('この投稿を削除しますか？')) {
       try {
-        const response = await axios.delete('/api/deletePost', {
-          data: {
-            postId: post.id,
+        const response = await axios.delete('/api/deleteContent', {
+          params: {
+            contentId: postId,
             userId: user.uid,
+            type : "post",
           },
         });
         if (response.status === 200) {
           alert('投稿を削除しました。');
-          router.push('/'); // 削除後にトップページにリダイレクト
+          router.push('/home'); 
         } else {
           alert('投稿の削除に失敗しました。');
         }
@@ -191,24 +192,22 @@ const PostDetailPage = () => {
     }
   };
 
-  const handleCommentDelete = async (commentId: number) => {
+  const handleDeleteComment = async (commentId: number) => {
     if (!user) {
-      alert('ログインが必要です。');
       return;
     }
-    
     if (confirm('このコメントを削除しますか？')) {
       try {
-        const response = await axios.delete('/api/deleteComment', {
+        const response = await axios.delete('/api/deleteContent', {
           params: {
-            commentId: commentId,
+            contentId: commentId,
             userId: user.uid,
+            type : "comment",
           },
         });
   
         if (response.status === 200) {
           alert('コメントを削除しました。');
-          // コメント一覧を再取得して更新
           setComments(comments.filter((comment) => comment.id !== commentId));
         } else {
           alert('コメントの削除に失敗しました。');
@@ -262,7 +261,7 @@ const PostDetailPage = () => {
                 いいね {currentLikeCount}
               </button>
               {user && user.uid === post.userId && (
-                <button onClick={handleDeleteClick} className={styles.deleteButton}>
+                <button onClick={() => handleDeletePost(post.id)} className={styles.deleteButton}>
                   <FaTrash /> 削除
                 </button>
               )}
@@ -305,7 +304,7 @@ const PostDetailPage = () => {
                     </Link>
                     {user && user.uid === comment.userId && (
                       <button
-                        onClick={() => handleCommentDelete(comment.id)}
+                        onClick={() => handleDeleteComment(comment.id)}
                         className={styles.commentDeleteButton}
                       >
                         <FaTrash /> 
