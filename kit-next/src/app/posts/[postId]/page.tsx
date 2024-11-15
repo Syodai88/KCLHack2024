@@ -15,6 +15,7 @@ import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
 import Link from 'next/link';
 import { FiMessageCircle } from 'react-icons/fi';
+import Loading from '@/components/common/Loading';
 
 
 interface Post {
@@ -133,7 +134,7 @@ const PostDetailPage = () => {
   
 
   if (!post) {
-    return <div>読み込み中...</div>;
+    return <Loading />;
   }
 
   return (
