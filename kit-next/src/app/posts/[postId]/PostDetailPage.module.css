@@ -147,6 +147,74 @@
     border-radius: 4px;
     margin: 1em 0;
   }
+
+  .actionButtons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+  }
+  
+  .button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .button:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+  }
+  
+  .liked {
+    background-color: #e74c3c;
+    color: #fff;
+  }
+  
+  .liked:hover {
+    background-color: #c0392b;
+  }
+  
+  .deleteButton {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .deleteButton svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .deleteButton:hover {
+    background-color: #f8d7da; 
+    color: #e74c3c; 
+    transform: translateY(-2px);
+  }
   
   .commentInputContainer {
     margin-top: 30px;
@@ -232,6 +300,31 @@
     font-weight: bold;
     color: #0070f3; 
   }
+
+  .commentDeleteButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .commentDeleteButton svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .commentDeleteButton:hover {
+    background-color: #f8d7da; /* 削除警告色の背景 */
+    color: #e74c3c; /* アイコンの色 */
+  }
+  
 
   .replyTo {
     cursor: pointer;
