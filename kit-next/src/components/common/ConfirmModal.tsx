@@ -4,6 +4,7 @@ import styles from './ConfirmModal.module.css';
 interface ConfirmModalProps {
   isOpen: boolean;
   message: string;
+  caution?: string;
   type: 'confirm' | 'success';
   onConfirm?: () => void;
   onCancel?: () => void;
@@ -15,6 +16,7 @@ interface ConfirmModalProps {
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   message,
+  caution,
   type,
   onConfirm,
   onCancel,
@@ -28,6 +30,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     <div className={styles.overlay}>
       <div className={`${styles.confirmModal} ${styles[type]}`}>
         <p className={styles.message}>{message}</p>
+        <p className={styles.caution}>*{caution}*</p>
         <div className={styles.buttons}>
           {type === 'confirm' && (
             <>
