@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest){
+  const { searchParams } = new URL(req.url);
+  const postId = searchParams.get('postId')
+  const loginUserId = searchParams.get('loginUserId') || "";
+  if(!postId){
+    return NextResponse.json({ error: 'postIdが指定されていません。' }, { status: 400 });
+  }
   try {
-    const { searchParams } = new URL(req.url);
-    const postId = searchParams.get('postId')
-    if(!postId){
-      return NextResponse.json({ error: 'postIdが指定されていません。' }, { status: 400 });
-    }
     // 投稿情報と関連するユーザー、企業、タグ情報の取得
     const post = await prisma.post.findUnique({
       where: {
@@ -16,6 +17,9 @@ export async function GET(req: NextRequest){
       include: {
         user: true,
         company: true,
+        likes: {
+          where :{ userId : loginUserId},
+        },
         postTags: {
           include: {
             tag: true,
@@ -41,6 +45,8 @@ export async function GET(req: NextRequest){
       },
     });
 
+    const isLiked = post.likes.length > 0;
+
     // BigIntをNumber型に変換して、必要なフィールドのみを選択
     const normalizedPost = {
       id: Number(post.id),
@@ -50,6 +56,8 @@ export async function GET(req: NextRequest){
       content: post.content,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+      likeCount: post.likeCount,
+      isLiked: isLiked,
       user: {
         id: post.user.id,
         name: post.user.name,
@@ -67,12 +75,12 @@ export async function GET(req: NextRequest){
     const normalizedComments = comments.map((comment) => ({
       id: Number(comment.id),
       postId: Number(comment.postId),
+      userId : comment.userId,
       parentId: comment.parentId ? Number(comment.parentId) : null,
       content: comment.content,
       createdAt: comment.createdAt,
       updatedAt: comment.updatedAt,
       user: {
-        id: comment.user.id,
         name: comment.user.name,
       },
     }));
