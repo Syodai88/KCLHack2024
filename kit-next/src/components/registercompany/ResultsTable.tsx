@@ -1,8 +1,10 @@
-import React,{useEffect, useState} from 'react';
+import React,{useState} from 'react';
 import Pagination from '../common/Pagination';
 import CompanyDetailModal from './CompanyDetailModal';
 import axios from 'axios';
 import Loading from '../common/Loading';
+import { useRouter } from 'next/navigation';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface Company {
   corporate_number: string;
@@ -22,15 +24,16 @@ interface ResultTableProps {
 const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, itemsPerPage, onPageChange }) => {
   const startIdx = (currentPage - 1) * itemsPerPage;
   const currentData = companies.slice(startIdx, startIdx + itemsPerPage);
+  const router = useRouter();
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [companyDetails, setCompanyDetails] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // モーダルの開閉状態を管理
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); 
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [registerState, setRegisterState] = useState<string | null>(null); // Loading、Error、Warning
 
   const fetchCompanyDetails = async (corporateNumber: string) => {
     try {
       const res = await axios.get(`/api/searchCompanyDetail?corporate_number=${corporateNumber}`);
-      console.log(res.data['hojin-infos'])
       setCompanyDetails(res.data['hojin-infos']);
       setIsModalOpen(true); 
     } catch (error) {
@@ -45,7 +48,6 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
   };
 
   const closeModal = () => {
-    setSelectedCompany(null);
     setCompanyDetails(null);
     setIsModalOpen(false); 
   };
@@ -58,7 +60,6 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
       const generateResponse = await axios.post('/api/generateCompanyInfo', {
         companyName: selectedCompany.name,
       });
-      console.log(generateResponse);
       if (generateResponse.status !== 200) {
         setRegisterState('Error');
         setTimeout(() => {
@@ -88,16 +89,17 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
         updateDate: selectedCompany.update_date,
       });
   
-      // 登録後の処理を検討、alertより登録中的な動き出したい
       if (response.status === 201) {
         setRegisterState('Success');
         setTimeout(() => {
           setRegisterState(null);
         }, 3000);
+        setIsConfirmModalOpen(true);
       } else {
         setRegisterState('Error');
         setTimeout(() => {
           setRegisterState(null);
+          setSelectedCompany(null);
         }, 3000);
       }
     } catch (error:any) {
@@ -109,12 +111,14 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
           setTimeout(() => {
             setRegisterState(null);
           }, 3000);
+          setIsConfirmModalOpen(true);
         } else {
           // その他のエラー
           console.error('Error registering company:', error.response.data.error);
           setRegisterState('Error');
           setTimeout(() => {
             setRegisterState(null);
+            setSelectedCompany(null);
           }, 3000);
         }
       } else {
@@ -123,17 +127,26 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
         setRegisterState('Error');
           setTimeout(() => {
             setRegisterState(null);
+            setSelectedCompany(null);
           }, 3000);
       }
     } finally {
-      // モーダルを閉じる
       closeModal();
     }
   };
+
+  const handleConfirmModalClose = () => {
+    if (selectedCompany) {
+      router.push(`/companies/${selectedCompany.corporate_number}`);
+    }
+    setIsConfirmModalOpen(false);
+    setSelectedCompany(null);
+  };
+
   if(registerState === "Loading"){
     return <Loading message='登録中...' />
   }else if(registerState === "Success"){
-    return <Loading message='登録しました'/>
+    return <Loading message='登録完了！' type='Success' />
   }else if(registerState === "Error"){
     return <Loading message='失敗しました' type='Error' />
   }else if(registerState === "Warning"){
@@ -191,6 +204,16 @@ const ResultTable: React.FC<ResultTableProps> = ({ companies, currentPage, items
         companyDetails={companyDetails}
         onRegister={handleRegister}
       />
+      )}
+      {isConfirmModalOpen && (
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          message="企業ページに移動します"
+          caution='環境によっては遷移できない場合があります。'
+          type="success"
+          onClose={handleConfirmModalClose}
+          confirmText="OK！"
+        />
       )}
     </div>
   );
