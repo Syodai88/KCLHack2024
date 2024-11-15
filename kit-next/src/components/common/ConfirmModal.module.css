@@ -1,0 +1,94 @@
+/* 全画面オーバーレイ */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* 半透明の黒 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px); /* 背景をぼかす */
+  z-index: 9999;
+}
+
+/* モーダル本体 */
+.confirmModal {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 400px;
+  max-width: 600px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 確認モーダルのタイプに応じたスタイル */
+.confirmModal.confirm {
+  border-top: 6px solid #ffc107; /* 警告色 */
+}
+
+.confirmModal.success {
+  border-top: 6px solid #28a745; /* 成功色 */
+}
+
+/* メッセージのスタイル */
+.message {
+  margin-bottom: 30px;
+  font-size: 22px;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  text-transform: uppercase;
+}
+
+/* ボタンのスタイル */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+/* キャンセルボタン */
+.cancelButton {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}
+
+/* 確認ボタン（共通） */
+.confirmButton {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.confirmModal.confirm .confirmButton {
+  background-color: #dc3545; /* 削除やログアウトの場合の色 */
+}
+
+.confirmModal.confirm .confirmButton:hover {
+  background-color: #c82333;
+}
+
+.confirmModal.success .confirmButton {
+  background-color: #28a745; /* 成功時の色 */
+}
+
+.confirmModal.success .confirmButton:hover {
+  background-color: #218838;
+}
