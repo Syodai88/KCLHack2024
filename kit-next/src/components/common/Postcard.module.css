@@ -107,4 +107,29 @@
     background-color: #4a148c;
     transform: translateY(-2px);
   }
+
+  .deleteButton {
+    border: none;
+    background-color: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .deleteButton:hover {
+    background-color: #f8d7da; 
+    color: #e74c3c; 
+    transform: translateY(-2px);
+  }
+  
+  .deleteButton svg {
+    width: 16px;
+    height: 16px;
+  }
+  
   

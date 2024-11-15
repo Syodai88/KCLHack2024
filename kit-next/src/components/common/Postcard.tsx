@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaHeart, FaRegHeart, FaTrash } from 'react-icons/fa';
 import styles from './Postcard.module.css';
 import axios from 'axios';
 
@@ -63,6 +63,30 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
       }
   };
 
+  const handleDeletePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (confirm('この投稿を削除しますか？')) {
+      try {
+        const response = await axios.delete('/api/deleteContent',{
+          params: {
+            contentId: post.id,
+            userId: loginUserId,
+            type: "post",
+          },
+        });
+        if (response.status === 200) {
+          alert('投稿を削除しました。');
+          router.refresh
+        } else {
+          alert('投稿の削除に失敗しました。');
+        }
+      } catch (error) {
+        console.error('投稿の削除に失敗しました:', error);
+        alert('投稿の削除に失敗しました。');
+      }
+    }
+  };
+
   const contentSnippet = post.content.slice(0, 100); // 最初の100文字を表示
   const isContentTruncated = post.content.length > 100;
 
@@ -100,6 +124,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
           <button onClick={handleCardClick} className={styles.detailButton}>
             詳細を見る
           </button>
+          {loginUserId === post.userId && (
+            <button onClick={handleDeletePost} className={styles.deleteButton}>
+              <FaTrash /> 削除
+            </button>
+          )}
         </div>
       </div>
     </Card>

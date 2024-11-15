@@ -15,6 +15,8 @@ import SplitPage from '@/components/common/SplitPage';
 import Sidebar from '@/components/common/Sidebar';
 import Link from 'next/link';
 import { FiMessageCircle } from 'react-icons/fi';
+import { FaHeart, FaRegHeart, FaTrash} from 'react-icons/fa';
+import Loading from '@/components/common/Loading';
 
 
 interface Post {
@@ -25,6 +27,7 @@ interface Post {
   content: string;
   createdAt: string;
   likeCount: number;
+  isliked: boolean;
   user: {
     id: string;
     name: string;
@@ -47,6 +50,7 @@ interface Comment {
   createdAt: string;
   parentId: number | null;
   user: {
+    id: string;
     name: string;
   };
 }
@@ -61,6 +65,9 @@ const PostDetailPage = () => {
   const { user, loading } = useAuth();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [isLikeState, setIsLikeState] = useState<boolean>(false);
+  const [currentLikeCount, setCurrentLikeCount] = useState<number>(0);
+
 
   // リプライ用のコメントIDを設定
   const handleReplyClick = (commentId: number) => {
@@ -72,19 +79,25 @@ const PostDetailPage = () => {
       if (postId) {
         try {
           const response = await axios.get('/api/getPostComments/',{
-            params: { postId: postId },
+            params: { 
+              postId: postId, 
+              loginUserId : user?.uid,
+            },
           });
           setPost(response.data.post);
           setComments(response.data.comments);
+          setCurrentLikeCount(response.data.post.likeCount);
+          setIsLikeState(response.data.post.isliked);
           setReplyTo(null); 
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
-          router.push('/404');
+
+          
         }
       }
     };
     fetchPostData();
-  }, [postId,router]);
+  }, [postId,router,user]);
 
   const handleCommentSubmit = async () => {
     if (commentContent.trim() === '') return;
@@ -92,7 +105,6 @@ const PostDetailPage = () => {
       alert('コメントするにはログインが必要です。');
       return;
     }
-
     try {
       const response = await axios.post(
         `/api/comments`,{ 
@@ -130,16 +142,90 @@ const PostDetailPage = () => {
     }
   };
   
+  const handleLikeClick = async () => {
+    if (!user || !post) {
+      return;
+    }
+    try {
+      const response = await axios.post('/api/postReaction', {
+        postId: post.id,
+        userId: user.uid,
+      });
+      if (response.data.likeAdded) {
+        setIsLikeState(true);
+        setCurrentLikeCount((prev) => prev + 1);
+      } else {
+        setIsLikeState(false);
+        setCurrentLikeCount((prev) => prev - 1);
+      }
+    } catch (error) {
+      console.error('いいねの更新に失敗しました:', error);
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    if (!user ||!post) {
+      return;
+    }
+    if (post.userId !== user.uid) {//投稿主とログインユーザーが違う時
+      return;
+    }
+    if (confirm('この投稿を削除しますか？')) {
+      try {
+        const response = await axios.delete('/api/deleteContent', {
+          params: {
+            contentId: postId,
+            userId: user.uid,
+            type : "post",
+          },
+        });
+        if (response.status === 200) {
+          alert('投稿を削除しました。');
+          router.push('/home'); 
+        } else {
+          alert('投稿の削除に失敗しました。');
+        }
+      } catch (error) {
+        console.error('投稿の削除に失敗しました:', error);
+        alert('投稿の削除に失敗しました。');
+      }
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!user) {
+      return;
+    }
+    if (confirm('このコメントを削除しますか？')) {
+      try {
+        const response = await axios.delete('/api/deleteContent', {
+          params: {
+            contentId: commentId,
+            userId: user.uid,
+            type : "comment",
+          },
+        });
   
+        if (response.status === 200) {
+          alert('コメントを削除しました。');
+          setComments(comments.filter((comment) => comment.id !== commentId));
+        } else {
+          alert('コメントの削除に失敗しました。');
+        }
+      } catch (error) {
+        console.error('コメントの削除に失敗しました:', error);
+        alert('コメントの削除に失敗しました。');
+      }
+    }
+  };
 
   if (!post) {
-    return <div>読み込み中...</div>;
+    return <Loading />;
   }
 
   return (
     <SplitPage sidebar={<Sidebar />}>
       <div className={styles.container}>
-        {/* ポストの表示 */}
         <div className={styles.postContainer}>
             <h1 className={styles.postTitle}>{post.title}</h1>
             <p className={styles.companyName}>企業名: {post.company.name}</p>
@@ -149,7 +235,7 @@ const PostDetailPage = () => {
                     <span key={postTag.id} className={styles.tag}>{postTag.name}</span>
                     ))
                 ) : (
-                    <span className={styles.noTags}>タグがありません</span>
+                    <span className={styles.noTags}>No Tags</span>
                 )}
             </div>
             <div className={styles.postMeta}>
@@ -166,6 +252,20 @@ const PostDetailPage = () => {
             >
                 {post.content}
             </ReactMarkdown>
+            <div className={styles.actionButtons}>
+              <button
+                onClick={handleLikeClick}
+                className={`${styles.button} ${isLikeState ? styles.liked : ''}`}
+              >
+                {isLikeState ? <FaHeart /> : <FaRegHeart />}
+                いいね {currentLikeCount}
+              </button>
+              {user && user.uid === post.userId && (
+                <button onClick={() => handleDeletePost(post.id)} className={styles.deleteButton}>
+                  <FaTrash /> 削除
+                </button>
+              )}
+            </div>
         </div>
         <div className={styles.sortButtonContainer}>
           <button onClick={handleSortToggle}>
@@ -202,6 +302,14 @@ const PostDetailPage = () => {
                     <Link className={styles.userName} href={`/mypage/${post.user.id}`}>
                       {comment.user.name}
                     </Link>
+                    {user && user.uid === comment.userId && (
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className={styles.commentDeleteButton}
+                      >
+                        <FaTrash /> 
+                      </button>
+                    )}
                 </div>
               </div>
           ))
