@@ -25,7 +25,6 @@ const Sidebar: React.FC<SidebarProps> = ({companyName}) => {
                     if (response.ok) {
                         const data = await response.json();
                         setImageUrl(data.profileImage);
-                        console.log(data.profileImage);
                         setNickname(data.name); // ニックネームをセット
                     } else {
                         console.error('ユーザーデータの取得に失敗しました');
