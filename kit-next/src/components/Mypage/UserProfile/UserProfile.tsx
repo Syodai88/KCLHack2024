@@ -34,6 +34,7 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const loggedInUserId = useAuth().user?.uid || '';
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPostsLoaded, setIsPostsLoaded] = useState<boolean>(false);
 
   // ユーザーデータを取得
   useEffect(() => {
@@ -65,6 +66,8 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
       return;
     }
     const fetchPosts = async () => {
+      setIsLoading(true);
+      setIsPostsLoaded(false);
       try {
         setIsLoading(true);
         const response = await axios.get('/api/fetchPostCard', {
@@ -80,6 +83,7 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
         console.error('Error fetching posts:', error);
       } finally {
         setIsLoading(false);
+        setIsPostsLoaded(true);
       }
     };
     if (loggedInUserId) {
@@ -113,10 +117,6 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
         return '卒業年度不明';
     }
   };
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <div className={styles.container}>
@@ -166,16 +166,17 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
                         </ReactMarkdown>
                     </div>
                 </div>
-                {/* 投稿一覧 */}
                 <div className={styles.postsSection}>
                     <h2>投稿一覧</h2>
-                    {posts.length > 0 ? (
+                    {isLoading ? (
+                      <Loading message='読込中'/> 
+                    ) : posts.length > 0 ? ( 
                       posts.map((post) => (
                         <PostCard key={post.id} post={post} loginUserId={loggedInUserId} isLiked={post.isLiked} />
                       ))
-                    ) : (
-                      <p>投稿がありません。</p>
-                    )}
+                    ) : isPostsLoaded ?(
+                      <p>投稿がありません。</p> 
+                    ) : null}
                 </div>
             </div>
         )}
