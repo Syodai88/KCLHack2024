@@ -35,7 +35,8 @@
     "rehype-katex": "^7.0.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/node": "^20.14.13",
