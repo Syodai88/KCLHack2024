@@ -2,12 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import Companycard from '../../components/common/Companycard'
-import Sidebar from '@/components/common/Sidebar';
+import Companycard from '../../components/home/Companycard'
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import SearchForm from '@/components/registercompany/searchForm';
 import type { Company } from '@/interface/interface';
-import Loading from '@/components/common/Loading';
+import Loading from '@/components/common/Loading/Loading';
 import axios from 'axios';
 
 interface ContentProps {

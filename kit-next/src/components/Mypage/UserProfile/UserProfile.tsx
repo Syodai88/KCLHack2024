@@ -6,11 +6,11 @@ import rehypeKatex from 'rehype-katex';
 import remarkBreaks from 'remark-breaks'; 
 import styles from './UserProfile.module.css';
 import React, { useState, useEffect } from 'react';
-import UserProfileEdit from './UserProfileEdit';
+import UserProfileEdit from '../UserProfileEdit/UserProfileEdit';
 import { useAuth } from '@/context/AuthContext';
-import Loading from '../common/Loading';
+import Loading from '../../common/Loading/Loading';
 import { FaEdit } from 'react-icons/fa';
-import PostCard from '../common/Postcard';
+import PostCard from '../../common/PostCard/Postcard';
 import axios from 'axios';
 import { Tag,Post } from '@/interface/interface';
 

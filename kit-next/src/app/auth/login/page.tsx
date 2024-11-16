@@ -9,7 +9,6 @@ const Login: React.FC = () => {
   useEffect(() =>{
     const auth = getAuth();
     signOut(auth).then(() => {
-      console.log('Signed out!');
     }).catch((error) => {
       console.error('Error signing out:', error);
     });

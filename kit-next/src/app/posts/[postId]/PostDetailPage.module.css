@@ -27,6 +27,7 @@
   }
   
   .companyName {
+    text-decoration: underline;
     font-size: 18px;
     color: #666;
     margin-bottom: 15px;
@@ -55,7 +56,7 @@
   }
   
   .userName {
-    color: #0070f3; /* 青色に設定 */
+    color: #0070f3; 
     text-decoration: underline;
     cursor: pointer;
   }

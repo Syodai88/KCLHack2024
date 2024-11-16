@@ -5,14 +5,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams  } from 'next/navigation';
 import { FaHeart, FaUserGraduate, FaCalendarCheck } from 'react-icons/fa';
 import styles from './CompanyPage.module.css';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
 import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/interface/interface';
-import Loading from '@/components/common/Loading';
+import Loading from '@/components/common/Loading/Loading';
 import axios from 'axios';
 import { Tag,Post } from '@/interface/interface';
-import PostCard from '@/components/common/Postcard';
+import PostCard from '@/components/common/PostCard/Postcard';
 
 
 const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null) => void  }> = ({ companyId,setCompanyName }) => {
@@ -38,7 +38,6 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
           return;
         }
         const companyData: Company = await response.json();
-        console.log('企業情報:', companyData);
         setCompany(companyData);
         setCurrentInterestCount(companyData.interestedCount);
         setCurrentInternCount(companyData.internCount);

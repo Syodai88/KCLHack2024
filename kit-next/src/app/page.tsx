@@ -3,20 +3,19 @@ import { motion } from 'framer-motion';
 import { useEffect, Suspense } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 import Footer from '@/components/common/Footer';
-import LoadingPage from '@/app/loading'; // LoadingPageをインポート
+import LoadingPage from '@/app/loading'; 
 
 const Welcome: React.FC = () => {
   useEffect(() => {
     const auth = getAuth();
     signOut(auth).then(() => {
-      console.log('Signed out!');
     }).catch((error) => {
       console.error('Error signing out:', error);
     });
   });
 
   return (
-    <Suspense fallback={<LoadingPage />}> {/* Suspenseで読み込み中にLoadingPageを表示 */}
+    <Suspense fallback={<LoadingPage />}> 
       <>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
