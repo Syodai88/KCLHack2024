@@ -5,8 +5,8 @@ import {AuthProvider } from './../context/AuthContext'
 
 
 export const metadata: Metadata = {
-  title: 'Kit Success | 大学生の未来をサポート',
-  description: '大学生のための包括的な就活支援Webアプリケーション',
+  title: 'Kit Success | 九工大生の未来をサポート',
+  description: '九工大生のための包括的な就活支援Webアプリケーション',
 }
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

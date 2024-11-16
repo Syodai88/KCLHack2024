@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useAuth } from './../../context/AuthContext'
 import ConfirmModal from './ConfirmModal';
 import { useState } from 'react';
+import Image from 'next/image';
 
 
 const Navbar: React.FC = () => {
@@ -29,14 +30,28 @@ const Navbar: React.FC = () => {
           <div className="flex space-x-7">
             <div>
               {user ? (
-                <span className="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">
-                  Kit Success
-                </span>
+                <Link href="/home" className="flex items-center py-4 px-2">
+                  <Image 
+                    src="/Logo.jpeg" 
+                    alt="Kit Success Logo" 
+                    width={200} 
+                    height={50} 
+                    className="object-contain"
+                    priority 
+                    style={{ width: 'auto', height: 'auto' }}
+                  />
+                </Link>
               ) : (
                 <Link href="/" className="flex items-center py-4 px-2">
-                  <span className="font-semibold text-gray-500 text-lg">
-                    Kit Success
-                  </span>
+                  <Image 
+                  src="/Logo.jpeg" 
+                  alt="Kit Success Logo" 
+                  width={200} 
+                  height={50} 
+                  className="object-contain"
+                  priority 
+                  style={{ width: 'auto', height: 'auto' }}
+                />
                 </Link>
               )}
             </div>

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, Suspense } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 import Footer from '@/components/common/Footer';
-import LoadingPage from '@/app/loading'; // LoadingPageをインポート
+import LoadingPage from '@/app/loading'; 
 
 const Welcome: React.FC = () => {
   useEffect(() => {
@@ -16,7 +16,7 @@ const Welcome: React.FC = () => {
   });
 
   return (
-    <Suspense fallback={<LoadingPage />}> {/* Suspenseで読み込み中にLoadingPageを表示 */}
+    <Suspense fallback={<LoadingPage />}> 
       <>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
