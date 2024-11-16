@@ -10,7 +10,7 @@ generator client {
 
 datasource kclhack2024database {
   provider = "postgresql"
-  url      = env("NEXT_PUBLIC_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 //ユーザー情報のテーブル、名前以下の初期値は秘密など適当に
