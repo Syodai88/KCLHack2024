@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { useAuth } from './../../context/AuthContext'
-import ConfirmModal from './ConfirmModal';
+import ConfirmModal from './ConfirmModal/ConfirmModal';
 import { useState } from 'react';
 import Image from 'next/image';
 

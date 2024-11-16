@@ -10,9 +10,9 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkBreaks from 'remark-breaks';
 import styles from './PostWrite.module.css';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 import SplitPage from '@/components/common/SplitPage';
-import Loading from '@/components/common/Loading';
+import Loading from '@/components/common/Loading/Loading';
 import { headers } from 'next/headers';
 
 interface CompanyData {

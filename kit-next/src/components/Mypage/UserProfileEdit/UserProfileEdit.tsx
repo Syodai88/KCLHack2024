@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ImageCropper from '@/components/Mypage/ImageCropper';
+import ImageCropper from '@/components/Mypage/ImageCropper/ImageCropper';
 import styles from './UserProfileEdit.module.css';
-import Loading from '../common/Loading';
+import Loading from '@/components/common/Loading/Loading';
 import { Avatar } from '@mui/material';
 import { FaCamera } from 'react-icons/fa';
 import Modal from '@mui/material/Modal';

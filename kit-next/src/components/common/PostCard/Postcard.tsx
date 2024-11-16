@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { FaHeart, FaRegHeart, FaTrash } from 'react-icons/fa';
 import styles from './Postcard.module.css';
 import axios from 'axios';
-import ConfirmModal from './ConfirmModal';
-import Loading from './Loading';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import Loading from '../Loading/Loading';
 
 interface Tag {
     id: number;

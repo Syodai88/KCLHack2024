@@ -1,10 +1,10 @@
 import React,{useState} from 'react';
-import Pagination from '../common/Pagination';
-import CompanyDetailModal from './CompanyDetailModal';
+import Pagination from './Pagination';
+import CompanyDetailModal from './CompanyDetailModal/CompanyDetailModal';
 import axios from 'axios';
-import Loading from '../common/Loading';
+import Loading from '../common/Loading/Loading';
 import { useRouter } from 'next/navigation';
-import ConfirmModal from '../common/ConfirmModal';
+import ConfirmModal from '../common/ConfirmModal/ConfirmModal';
 
 interface Company {
   corporate_number: string;

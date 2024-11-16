@@ -12,12 +12,12 @@ import rehypeKatex from 'rehype-katex';
 import remarkBreaks from 'remark-breaks';
 import { Divider } from '@mui/material';
 import SplitPage from '@/components/common/SplitPage';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 import Link from 'next/link';
 import { FiMessageCircle } from 'react-icons/fi';
 import { FaHeart, FaRegHeart, FaTrash} from 'react-icons/fa';
-import Loading from '@/components/common/Loading';
-import ConfirmModal from '@/components/common/ConfirmModal';
+import Loading from '@/components/common/Loading/Loading';
+import ConfirmModal from '@/components/common/ConfirmModal/ConfirmModal';
 
 
 interface Post {

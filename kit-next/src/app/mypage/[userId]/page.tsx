@@ -2,9 +2,9 @@
 import 'katex/dist/katex.min.css'; 
 import React from 'react';
 import SplitPage from '@/components/common/SplitPage';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 import { useParams } from 'next/navigation';
-import UserProfile from '@/components/Mypage/UserProfile';
+import UserProfile from '@/components/Mypage/UserProfile/UserProfile';
 
 const Mypage: React.FC = () => {
     const params = useParams();

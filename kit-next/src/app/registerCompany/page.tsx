@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import SearchForm from '../../components/registercompany/searchForm';
 import SplitPage from '../../components/common/SplitPage';
 import ResultsTable from '@/components/registercompany/ResultsTable';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/components/common/Sidebar/Sidebar';
 
 
 type Company = {
