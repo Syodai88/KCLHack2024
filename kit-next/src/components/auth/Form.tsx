@@ -44,7 +44,6 @@ const Form: React.FC<FormProps> = ({ type }) => {
     if (type === 'login'){
       try{
         await login(formData.email, formData.password);
-        console.log('Logged in successfully');
       }catch(error){
         setFormError('メールアドレスまたはパスワードが間違っています');
         console.error('Login Error:', error);
@@ -62,7 +61,6 @@ const Form: React.FC<FormProps> = ({ type }) => {
         console.error('Failed to register:', error);
       }
     }
-    console.log('Form submitted:', formData)
   }
 
   return (

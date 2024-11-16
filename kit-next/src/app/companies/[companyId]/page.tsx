@@ -38,7 +38,6 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
           return;
         }
         const companyData: Company = await response.json();
-        console.log('企業情報:', companyData);
         setCompany(companyData);
         setCurrentInterestCount(companyData.interestedCount);
         setCurrentInternCount(companyData.internCount);
