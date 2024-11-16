@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/interface/interface';
 import Loading from '@/components/common/Loading/Loading';
 import axios from 'axios';
-import { Tag,Post } from '@/interface/interface';
+import { Post } from '@/interface/interface';
 import PostCard from '@/components/common/PostCard/Postcard';
 
 
@@ -26,15 +26,19 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
   const [currentEventJoinCount, setCurrentEventJoinCount] = useState(0);
   const [posts ,setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [isCompanyLoaded, setIsCompanyLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
         setIsLoading("Loading");
+        setIsCompanyLoaded(false);
         const response = await fetch(`/api/getDbCompanyInfo?corporateNumber=${companyId}`);
         if (!response.ok) {
-          setIsLoading(null);
-          notFound();
+          setIsLoading("Error");
+          setTimeout(() => {
+            setIsLoading(null);
+          }, 3000);
           return;
         }
         const companyData: Company = await response.json();
@@ -46,7 +50,12 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         setIsLoading(null);
       } catch (error) {
         setIsLoading("Error");
+        setTimeout(() => {
+          setIsLoading(null);
+        }, 3000);
         console.error('企業情報の取得エラー:', error);
+      } finally {
+        setIsCompanyLoaded(true);
       }
     };
     fetchCompanyData();
@@ -148,33 +157,35 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
     return <Loading/>
   }else if (isLoading ==="Error"){
     return <Loading type="Error" message='Company Error'/>
-  }else if (!company) {
+  }
+
+  if (isCompanyLoaded && !company) {
     return <div className={styles.error}>企業の詳細を読み込めませんでした</div>;
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.companyHeader}>
-        <h1 className={styles.companyName}>{company.name}</h1>
+        <h1 className={styles.companyName}>{company?.name}</h1>
       </div>
       <div className={styles.companyInfo}>
         <div className={styles.infoItem}>
           <h2>所在地</h2>
-          <p>{company.location || '情報がありません'}</p>
+          <p>{company?.location || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>従業員数</h2>
-          <p>{company.employeeNumberAi ?? '情報がありません'}</p>
+          <p>{company?.employeeNumberAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>事業概要</h2>
-          <p>{company.businessSummary || '情報がありません'}</p>
+          <p>{company?.businessSummary || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>事業概要（生成AIによる情報）</h2>
-          <p>{company.businessSummaryAi || '情報がありません'}</p>
+          <p>{company?.businessSummaryAi || '情報がありません'}</p>
         </div>
-        {company.companyUrl && (
+        {company?.companyUrl && (
           <div className={styles.infoItem}>
             <h2>公式サイト</h2>
             <p>
@@ -186,15 +197,15 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         )}
         <div className={styles.infoItem}>
           <h2>平均収入（生成AI）</h2>
-          <p>{company.averageSalaryAi || '情報がありません'}</p>
+          <p>{company?.averageSalaryAi || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>平均年齢（生成AI）</h2>
-          <p>{company.averageAgeAi ?? '情報がありません'}</p>
+          <p>{company?.averageAgeAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>平均勤続年数（生成AI）</h2>
-          <p>{company.averageContinuousServiceYearsAi ?? '情報がありません'}</p>
+          <p>{company?.averageContinuousServiceYearsAi ?? '情報がありません'}</p>
         </div>
       </div>
 
