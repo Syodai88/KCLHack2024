@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource kclhack2024database {
+  provider = "postgresql"
+  url      = env("NEXT_PUBLIC_DATABASE_URL")
+}
+
+//ユーザー情報のテーブル、名前以下の初期値は秘密など適当に
+model User{
+  id                String   @id @unique // firebase側で設定されたID
+  email             String   @unique // メールアドレス: ユーザーの登録メール
+  name              String   // 名前: ユーザーの氏名。
+  year              String   // 学年（B1~B4、M1~M2、D1~D3から選択）
+  department        String   // 学科
+  other             String?   //任意の情報(null可)
+  profileImage      String?   //画像のURL
+
+
+  posts     Post[]     // Postとのリレーション
+  likes     Like[]     // Likeとのリレーション
+  interests Interest[] // Interestとのリレーション
+  interns   Intern[]   // Internとのリレーション
+  events    Event[]    // Eventとのリレーション
+  comments   Comment[] // Commentとのリレーション
+}
+
+//企業情報保存のテーブル
+model Company {
+  corporateNumber              String   @id @unique  // 法人番号: 企業の一意の識別子。
+  name                         String   // 企業名: 企業を識別するための基本情報。
+  representativeName           String?  // 代表者名: 企業の代表者情報。
+  location                     String?  // 所在地: 企業の所在地（住所）。
+  employeeNumber               Int?     // 従業員数: 企業の規模を把握するための指標。
+  employeeNumberAi             Int?     // AIで生成した従業員数
+  businessSummary              String?  // 事業概要: 企業が行っている事業の概要。
+  businessSummaryAi            String?  // AIで生成した事業概要: 企業が行っている事業の概要をgeminiで生成
+  keyMessageAi                 String?  // AIで生成したkeyMessage
+  companyUrl                   String?  // 企業URL: 企業の公式ウェブサイトのURL。
+  dateOfEstablishment          DateTime?// 設立日: 企業が設立された日付。
+  averageContinuousServiceYearsAi Float?  // 平均継続勤務年数: 従業員の平均勤務年数を示す。
+  averageAgeAi                   Float?   // 従業員の平均年齢: 職場の年齢構成を理解するための指標。
+  averageSalaryAi              String?  //新卒の平均給料(Geminiの生成でx万形式)
+  updateDate                   DateTime?// 更新日: 情報が最後に更新された日付。
+  
+  interestedCount              Int @default(0)     // 興味があるリアクションの数のキャッシュ
+  internCount                  Int @default(0)     // インターン参加リアクションの数のキャッシュ
+  eventJoinCount               Int @default(0)     // イベント参加リアクションの数のキャッシュ
+
+  posts            Post[]
+  interns          Intern[]   // Internとのリレーション
+  interests        Interest[] // Interestとのリレーション
+  events           Event[]    // Eventとのリレーション
+
+  @@index([name])   
+}
+
+// 企業ごとにPostした投稿のテーブル
+model Post {
+  id          BigInt   @id @default(autoincrement()) // ID (BigInt)
+  user        User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId      String                              // UserテーブルのID
+  company     Company      @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
+  companyId   String                              // Companyテーブルの法人番号
+  title       String                              // 投稿のタイトル
+  content     String                              // 投稿の内容
+  createdAt   DateTime  @default(now())           // 作成日時
+  updatedAt   DateTime  @updatedAt                // 更新日時
+  likeCount   Int @default(0)                     // いいね数のキャッシュ
+
+  likes       Like[]    // Likeとのリレーション
+  postTags    PostTag[] // PostTagとのリレーション
+  comments   Comment[] // Commentとのリレーション
+
+  @@index([companyId])  
+  @@index([userId])   
+}
+
+// Postに対するlikeの中間テーブル
+model Like {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  post       Post      @relation(fields: [postId], references: [id]) // Postとのリレーション
+  postId     BigInt                              // PostテーブルのID
+
+  user       User      @relation(fields: [userId], references: [id]) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+
+  @@unique([postId, userId])//各投稿へのいいね数制限
+
+  @@index([postId])
+  @@index([userId])
+}
+
+// Companyに対するinterestの中間テーブル
+model Interest {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Companyに対するinternの中間テーブル
+model Intern {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Companyに対するeventの中間テーブル
+model Event {
+  id         BigInt    @id @default(autoincrement()) // ID (BigInt)
+  company    Company   @relation(fields: [companyId], references: [corporateNumber], onDelete: Cascade) // Companyとのリレーション
+  companyId  String                              // Companyテーブルの法人番号
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Userとのリレーション
+  userId     String                              // UserテーブルのID
+}
+
+// Tagの内容のテーブル
+model Tag {
+  id         Int    @id @default(autoincrement()) // ID (Int)
+  name       String   @unique // タグの名前
+  postTags PostTag[] // PostTagとのリレーション
+}
+
+model PostTag {
+  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade) // Postとのリレーション
+  postId  BigInt  // PostのID
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)  // Tagとのリレーション
+  tagId   Int     // TagのID
+
+  @@id([postId, tagId]) // 複合主キー
+}
+
+//Commentのテーブル
+model Comment {
+  id        BigInt   @id @default(autoincrement())
+  postId    BigInt
+  userId    String
+  content   String
+  parentId  BigInt?   // 親コメントID。NULLの場合はトップレベルコメント。
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([userId])
+}
+
+
+
+  
+
+
+
