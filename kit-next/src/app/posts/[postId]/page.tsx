@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { FiMessageCircle } from 'react-icons/fi';
 import { FaHeart, FaRegHeart, FaTrash} from 'react-icons/fa';
 import Loading from '@/components/common/Loading';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 
 interface Post {
@@ -62,17 +63,16 @@ const PostDetailPage = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState('');
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [replyTo, setReplyTo] = useState<number | null>(null);
   const [isLikeState, setIsLikeState] = useState<boolean>(false);
   const [currentLikeCount, setCurrentLikeCount] = useState<number>(0);
-
-
-  // リプライ用のコメントIDを設定
-  const handleReplyClick = (commentId: number) => {
-    setReplyTo(commentId);
-  };
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [deleteType, setDeleteType] = useState<'post' | 'comment'>('post');
+  const [deleteCommentId, setDeleteCommentId] = useState<number | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -91,8 +91,6 @@ const PostDetailPage = () => {
           setReplyTo(null); 
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
-
-          
         }
       }
     };
@@ -102,7 +100,11 @@ const PostDetailPage = () => {
   const handleCommentSubmit = async () => {
     if (commentContent.trim() === '') return;
     if (!user) {
-      alert('コメントするにはログインが必要です。');
+      setErrorMessage("Pls Login");
+      setIsError(true);
+      setTimeout(() => {
+        setIsError(false);
+      }, 2000);
       return;
     }
     try {
@@ -114,17 +116,25 @@ const PostDetailPage = () => {
           parentId: replyTo,
         },
       );
-      console.log('Response:', response);
       if(response.status === 201){
         setComments([...comments, response.data.comment]);
         setCommentContent('');
       } else {
         console.error('コメントの投稿に失敗しました:', response.data.error);
-        alert('コメントの投稿に失敗しました。');
+        setIsError(true);
+        setErrorMessage("PostError");
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
       }
     } catch (error) {
       console.error('コメントの投稿に失敗しました:', error);
-      alert('コメントの投稿に失敗しました。');
+      setIsError(true);
+      setErrorMessage("PostError");
+      setIsError(true);
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
     }
   };
 
@@ -134,7 +144,6 @@ const PostDetailPage = () => {
     setComments([...comments].reverse());
   };
 
-  // 対象コメントにスクロール
   const scrollToComment = (commentId: number) => {
     const targetElement = document.getElementById(`comment-${commentId}`);
     if (targetElement) {
@@ -163,32 +172,36 @@ const PostDetailPage = () => {
     }
   };
 
-  const handleDeletePost = async (postId: number) => {
+  const handleDeletePost = async () => {
     if (!user ||!post) {
       return;
     }
-    if (post.userId !== user.uid) {//投稿主とログインユーザーが違う時
+    if (post.userId !== user.uid) {
       return;
     }
-    if (confirm('この投稿を削除しますか？')) {
-      try {
-        const response = await axios.delete('/api/deleteContent', {
-          params: {
-            contentId: postId,
-            userId: user.uid,
-            type : "post",
-          },
-        });
-        if (response.status === 200) {
-          alert('投稿を削除しました。');
-          router.push('/home'); 
-        } else {
-          alert('投稿の削除に失敗しました。');
-        }
-      } catch (error) {
-        console.error('投稿の削除に失敗しました:', error);
-        alert('投稿の削除に失敗しました。');
+    try {
+      const response = await axios.delete('/api/deleteContent', {
+        params: {
+          contentId: postId,
+          userId: user.uid,
+          type : "post",
+        },
+      });
+      if (response.status === 200) {
+        router.push('/home'); 
+      } else {
+        setIsError(true);
+        setErrorMessage("Del Error");
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
       }
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage("Del Error");
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
     }
   };
 
@@ -196,31 +209,68 @@ const PostDetailPage = () => {
     if (!user) {
       return;
     }
-    if (confirm('このコメントを削除しますか？')) {
-      try {
-        const response = await axios.delete('/api/deleteContent', {
-          params: {
-            contentId: commentId,
-            userId: user.uid,
-            type : "comment",
-          },
-        });
-  
-        if (response.status === 200) {
-          alert('コメントを削除しました。');
-          setComments(comments.filter((comment) => comment.id !== commentId));
-        } else {
-          alert('コメントの削除に失敗しました。');
-        }
-      } catch (error) {
-        console.error('コメントの削除に失敗しました:', error);
-        alert('コメントの削除に失敗しました。');
+    try {
+      const response = await axios.delete('/api/deleteContent', {
+        params: {
+          contentId: commentId,
+          userId: user.uid,
+          type : "comment",
+        },
+      });
+
+      if (response.status === 200) {
+        setComments(comments.filter((comment) => comment.id !== commentId));
+      } else {
+        setIsError(true);
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
       }
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage("Del Error");
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
     }
   };
 
+  const handleDeletePostClick = () => {
+    setDeleteType("post");
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDeletePost = () => {
+    handleDeletePost();
+  };
+
+  const handleDeleteCommnetClick = (deleteId : number) => {
+    setDeleteType("comment");
+    setDeleteCommentId(deleteId);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDeleteCommnet = async() => {
+    if (deleteCommentId !== null) {
+      await handleDeleteComment(deleteCommentId);
+    }
+    setDeleteCommentId(null);
+    setIsModalOpen(false);
+
+
+  };
+
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
+  };
+
+
   if (!post) {
     return <Loading />;
+  }
+
+  if (isError){
+    return <Loading type="Error" message={errorMessage}/>;
   }
 
   return (
@@ -261,7 +311,7 @@ const PostDetailPage = () => {
                 いいね {currentLikeCount}
               </button>
               {user && user.uid === post.userId && (
-                <button onClick={() => handleDeletePost(post.id)} className={styles.deleteButton}>
+                <button onClick={handleDeletePostClick} className={styles.deleteButton}>
                   <FaTrash /> 削除
                 </button>
               )}
@@ -304,7 +354,7 @@ const PostDetailPage = () => {
                     </Link>
                     {user && user.uid === comment.userId && (
                       <button
-                        onClick={() => handleDeleteComment(comment.id)}
+                        onClick={() => handleDeleteCommnetClick(comment.id)}
                         className={styles.commentDeleteButton}
                       >
                         <FaTrash /> 
@@ -336,6 +386,15 @@ const PostDetailPage = () => {
           </button>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        message={deleteType === 'post' ? 'この投稿を削除しますか？' : 'このコメントを削除しますか？'}
+        type="confirm"
+        onConfirm={deleteType === 'post' ? handleConfirmDeletePost : handleConfirmDeleteCommnet}
+        onCancel={handleCancelDelete}
+        confirmText="削除"
+        cancelText="キャンセル"
+      />
     </SplitPage>
   );
 };
