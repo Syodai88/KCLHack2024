@@ -32,6 +32,7 @@
 
 .message {
   font-size: 22px;
+  margin-bottom: 5px;
   font-weight: bold;
   font-family: 'Arial', sans-serif;
   color: #333;
@@ -39,7 +40,6 @@
 }
 
 .caution {
-  margin-bottom: 30px;
   font-size: 16px; 
   color: #ff9800; 
   font-weight: 500;
@@ -52,6 +52,7 @@
 }
 
 .buttons {
+  margin-top: 30px;
   display: flex;
   justify-content: center;
   gap: 20px;

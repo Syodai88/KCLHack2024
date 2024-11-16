@@ -30,7 +30,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     <div className={styles.overlay}>
       <div className={`${styles.confirmModal} ${styles[type]}`}>
         <p className={styles.message}>{message}</p>
-        <p className={styles.caution}>*{caution}*</p>
+        {caution && <p className={styles.caution}>*{caution}*</p>}
         <div className={styles.buttons}>
           {type === 'confirm' && (
             <>
