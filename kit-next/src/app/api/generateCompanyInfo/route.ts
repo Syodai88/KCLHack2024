@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const API_KEY = process.env.GEMINI_API_KEY;
-
-if (!API_KEY) {
-  throw new Error('GEMINI_API_KEY is not set');
-}
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-
 export async function POST(req: Request) {
+  const API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    console.warn('GEMINI_API_KEY is not set');
+    return NextResponse.json(
+      { error: 'GEMINI_API_KEY is not set. This endpoint requires a valid API key.' },
+      { status: 500 }
+    );
+  }
+
+  const genAI = new GoogleGenerativeAI(API_KEY);
   const body = await req.json();
   const { companyName } = body;
 
