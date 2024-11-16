@@ -68,27 +68,6 @@ const Home: React.FC = () => {
     }));
   };
 
-  const fetchPopularCompanies = async (userId : string) => {
-    if(!user){
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const response = await axios.get('/api/popularCompaniesWithReactions',{
-        params: {userId: userId}
-      });
-      const data:Company[] = response.data;
-      const popularIds = data.map((company: Company) => company.corporateNumber);
-      const updatedCompanies = markPopularCompanies(data, popularIds);
-      setResults(updatedCompanies);
-    } catch (error) {
-      console.error('Error fetching top companies:', error);
-      setResults([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const fetchCompanies = async (query : string, userId : string) => {
     if (!user){
       return;
@@ -106,12 +85,29 @@ const Home: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
-    if(user){
-      fetchPopularCompanies(user.uid); // 初回ロード時に上位企業を取得
-    }
+    const fetchCompaniesData = async () => {
+      if (user) {
+        try {
+          setIsLoading(true);
+          const response = await axios.get('/api/popularCompaniesWithReactions', {
+            params: { userId: user.uid },
+          });
+          const data: Company[] = response.data;
+          const popularIds = data.map((company: Company) => company.corporateNumber);
+          const updatedCompanies = markPopularCompanies(data, popularIds);
+          setResults(updatedCompanies);
+        } catch (error) {
+          console.error('Error fetching top companies:', error);
+          setResults([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchCompaniesData();
   }, [user]);
+  
 
 
   return (
