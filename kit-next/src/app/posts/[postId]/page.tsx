@@ -278,7 +278,9 @@ const PostDetailPage = () => {
       <div className={styles.container}>
         <div className={styles.postContainer}>
             <h1 className={styles.postTitle}>{post.title}</h1>
-            <p className={styles.companyName}>企業名: {post.company.name}</p>
+            <Link className={styles.companyName} href={`/companies/${post.companyId}`}>
+              企業名: {post.company.name}
+            </Link>
             <div className={styles.tagContainer}>
                 {post.tags && post.tags.length > 0 ? (
                     post.tags.map((postTag) => (
