@@ -124,34 +124,69 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
 
 
 
-  const handleReactionClick = async (actionType: string) => {
-    try {
-      const response = await fetch('/api/companyReaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ actionType:actionType, companyId:companyId, userId:user?.uid }),
-      });
+const [isInterestButtonDisabled, setIsInterestButtonDisabled] = useState(false);
+const [isInternButtonDisabled, setIsInternButtonDisabled] = useState(false);
+const [isEventJoinButtonDisabled, setIsEventJoinButtonDisabled] = useState(false);
 
-      if (response.ok) {
-        if (actionType === 'interest') {
-          setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
-          setIsInterested((prev) => !prev);
-        } else if (actionType === 'intern') {
-          setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
-          setIsInterned((prev) => !prev);
-        } else if (actionType === 'eventJoin') {
-          setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
-          setIsEventJoined((prev) => !prev);
-        }
-      } else {
-        console.error('Failed to update reaction');
-      }
-    } catch (error) {
-      console.error('Error updating reaction:', error);
+const handleReactionClick = async (actionType: string) => {
+  // 連続クリック防止
+  if (actionType === 'interest') {
+    setIsInterestButtonDisabled(true);
+  } else if (actionType === 'intern') {
+    setIsInternButtonDisabled(true);
+  } else if (actionType === 'eventJoin') {
+    setIsEventJoinButtonDisabled(true);
+  }
+
+  if (actionType === 'interest') {
+    setIsInterested((prev) => !prev);
+    setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
+  } else if (actionType === 'intern') {
+    setIsInterned((prev) => !prev);
+    setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
+  } else if (actionType === 'eventJoin') {
+    setIsEventJoined((prev) => !prev);
+    setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
+  }
+
+  try {
+    const response = await fetch('/api/companyReaction', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ actionType, companyId, userId: user?.uid }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  };
+  } catch (error) {
+    // エラーが発生した場合、状態を元に戻す
+    if (actionType === 'interest') {
+      setIsInterested((prev) => !prev);
+      setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
+    } else if (actionType === 'intern') {
+      setIsInterned((prev) => !prev);
+      setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
+    } else if (actionType === 'eventJoin') {
+      setIsEventJoined((prev) => !prev);
+      setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
+    }
+    console.error('Error updating reaction:', error);
+
+  } finally {
+    setTimeout(() => {
+      if (actionType === 'interest') {
+        setIsInterestButtonDisabled(false);
+      } else if (actionType === 'intern') {
+        setIsInternButtonDisabled(false);
+      } else if (actionType === 'eventJoin') {
+        setIsEventJoinButtonDisabled(false);
+      }
+    }, 1500); 
+  }
+};
 
   if (isLoading ==="Loading"){
     return <Loading/>
@@ -213,6 +248,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('interest')}
           className={`${styles.button} ${isInterested ? styles.interested : ''}`}
+          disabled={isInterestButtonDisabled}
         >
           <FaHeart />
           興味あり ({currentInterestCount})
@@ -220,6 +256,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('intern')}
           className={`${styles.button} ${isInterned ? styles.interned : ''}`}
+          disabled={isInternButtonDisabled}
         >
           <FaUserGraduate />
           インターン参加者 ({currentInternCount})
@@ -227,6 +264,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('eventJoin')}
           className={`${styles.button} ${isEventJoined ? styles.attendedEvent : ''}`}
+          disabled={isEventJoinButtonDisabled}
         >
           <FaCalendarCheck />
           イベント参加者 ({currentEventJoinCount})
