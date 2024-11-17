@@ -193,10 +193,9 @@ const handleReactionClick = async (actionType: string) => {
     }, 1500); 
   }
 };
-
-  if (isLoading ==="Loading"){
-    return <Loading/>
-  }else if (isLoading ==="Error"){
+  if (isLoading === "Loading"){
+    return <Loading message='読込中'/>
+  } else if (isLoading ==="Error"){
     return <Loading type="Error" message='Company Error'/>
   }
 
@@ -280,7 +279,9 @@ const handleReactionClick = async (actionType: string) => {
       {/* 投稿部分は以下に追加 */}
       <div className={styles.postsSection}>
         <h2>投稿一覧</h2>
-        {posts.length > 0 ? (
+        {isLoading === "Loading" ? (
+          <Loading message='読込中'/> 
+        ) : posts.length > 0 ? ( 
           posts.map((post) => (
             <PostCard key={post.id} post={post} loginUserId={user?.uid || ''} isLiked={post.isLiked} />
           ))
