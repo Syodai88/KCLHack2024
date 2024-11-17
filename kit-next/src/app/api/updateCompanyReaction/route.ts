@@ -1,33 +1,73 @@
-//companyテーブルのデータの定期更新用のAPI、デプロイ後にGoole Cloud Schedulerで定期実行の設定をすること
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    const companies = await prisma.company.findMany();
+    // Get counts per companyId for interests
+    const interestCounts = await prisma.interest.groupBy({
+      by: ['companyId'],
+      _count: {
+        _all: true,
+      },
+    });
 
-    for (const company of companies) {
-      const interestCount = await prisma.interest.count({
-        where: { companyId: company.corporateNumber },
-      });
+    // Get counts per companyId for interns
+    const internCounts = await prisma.intern.groupBy({
+      by: ['companyId'],
+      _count: {
+        _all: true,
+      },
+    });
 
-      const internCount = await prisma.intern.count({
-        where: { companyId: company.corporateNumber },
-      });
+    // Get counts per companyId for events
+    const eventJoinCounts = await prisma.event.groupBy({
+      by: ['companyId'],
+      _count: {
+        _all: true,
+      },
+    });
 
-      const eventJoinCount = await prisma.event.count({
-        where: { companyId: company.corporateNumber },
-      });
+    // Create maps from companyId to counts
+    const interestCountMap = new Map();
+    for (const item of interestCounts) {
+      interestCountMap.set(item.companyId, item._count._all);
+    }
 
-      await prisma.company.update({
-        where: { corporateNumber: company.corporateNumber },
+    const internCountMap = new Map();
+    for (const item of internCounts) {
+      internCountMap.set(item.companyId, item._count._all);
+    }
+
+    const eventJoinCountMap = new Map();
+    for (const item of eventJoinCounts) {
+      eventJoinCountMap.set(item.companyId, item._count._all);
+    }
+
+    // Now get all companyIds
+    const companies = await prisma.company.findMany({
+      select: { corporateNumber: true },
+    });
+
+    // Prepare update operations
+    const updateOperations = companies.map((company) => {
+      const corporateNumber = company.corporateNumber;
+
+      const interestedCount = interestCountMap.get(corporateNumber) || 0;
+      const internCount = internCountMap.get(corporateNumber) || 0;
+      const eventJoinCount = eventJoinCountMap.get(corporateNumber) || 0;
+
+      return prisma.company.update({
+        where: { corporateNumber },
         data: {
-          interestedCount: interestCount,
-          internCount: internCount,
-          eventJoinCount: eventJoinCount,
+          interestedCount,
+          internCount,
+          eventJoinCount,
         },
       });
-    }
+    });
+
+    // Run updates in a transaction
+    await prisma.$transaction(updateOperations);
 
     return NextResponse.json({ message: 'Reaction counts updated successfully' });
   } catch (error) {
