@@ -3,70 +3,37 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    // Get counts per companyId for interests
-    const interestCounts = await prisma.interest.groupBy({
-      by: ['companyId'],
-      _count: {
-        _all: true,
-      },
-    });
-
-    // Get counts per companyId for interns
-    const internCounts = await prisma.intern.groupBy({
-      by: ['companyId'],
-      _count: {
-        _all: true,
-      },
-    });
-
-    // Get counts per companyId for events
-    const eventJoinCounts = await prisma.event.groupBy({
-      by: ['companyId'],
-      _count: {
-        _all: true,
-      },
-    });
-
-    // Create maps from companyId to counts
-    const interestCountMap = new Map();
-    for (const item of interestCounts) {
-      interestCountMap.set(item.companyId, item._count._all);
-    }
-
-    const internCountMap = new Map();
-    for (const item of internCounts) {
-      internCountMap.set(item.companyId, item._count._all);
-    }
-
-    const eventJoinCountMap = new Map();
-    for (const item of eventJoinCounts) {
-      eventJoinCountMap.set(item.companyId, item._count._all);
-    }
-
-    // Now get all companyIds
+    // すべての企業IDを取得
     const companies = await prisma.company.findMany({
       select: { corporateNumber: true },
     });
 
-    // Prepare update operations
-    const updateOperations = companies.map((company) => {
+    const updateOperations = [];
+
+    for (const company of companies) {
       const corporateNumber = company.corporateNumber;
 
-      const interestedCount = interestCountMap.get(corporateNumber) || 0;
-      const internCount = internCountMap.get(corporateNumber) || 0;
-      const eventJoinCount = eventJoinCountMap.get(corporateNumber) || 0;
+      // 各企業の興味、インターン、イベント参加のカウントを取得
+      const [interestCount, internCount, eventJoinCount] = await Promise.all([
+        prisma.interest.count({ where: { companyId: corporateNumber } }),
+        prisma.intern.count({ where: { companyId: corporateNumber } }),
+        prisma.event.count({ where: { companyId: corporateNumber } })
+      ]);
 
-      return prisma.company.update({
-        where: { corporateNumber },
-        data: {
-          interestedCount,
-          internCount,
-          eventJoinCount,
-        },
-      });
-    });
+      // 更新操作を準備
+      updateOperations.push(
+        prisma.company.update({
+          where: { corporateNumber },
+          data: {
+            interestedCount: interestCount,
+            internCount: internCount,
+            eventJoinCount: eventJoinCount,
+          },
+        })
+      );
+    }
 
-    // Run updates in a transaction
+    // トランザクション内で一括更新
     await prisma.$transaction(updateOperations);
 
     return NextResponse.json({ message: 'Reaction counts updated successfully' });
