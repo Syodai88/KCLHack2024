@@ -129,7 +129,6 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
   }, [user, companyId]);
 
 
-
 const [isInterestButtonDisabled, setIsInterestButtonDisabled] = useState(false);
 const [isInternButtonDisabled, setIsInternButtonDisabled] = useState(false);
 const [isEventJoinButtonDisabled, setIsEventJoinButtonDisabled] = useState(false);
@@ -194,7 +193,7 @@ const handleReactionClick = async (actionType: string) => {
   }
 };
   if (isLoading === "Loading"){
-    return <Loading message='読込中'/>
+    return <Loading/>
   } else if (isLoading ==="Error"){
     return <Loading type="Error" message='Company Error'/>
   }
@@ -280,7 +279,7 @@ const handleReactionClick = async (actionType: string) => {
       <div className={styles.postsSection}>
         <h2>投稿一覧</h2>
         {isLoading === "Loading" ? (
-          <Loading message='読込中'/> 
+          <Loading/> 
         ) : posts.length > 0 ? ( 
           posts.map((post) => (
             <PostCard key={post.id} post={post} loginUserId={user?.uid || ''} isLiked={post.isLiked} />
