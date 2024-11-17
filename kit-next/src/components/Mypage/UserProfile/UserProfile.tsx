@@ -66,7 +66,6 @@ const UserProfile: React.FC<{ userId: string }> =({ userId }) => {
       return;
     }
     const fetchPosts = async () => {
-      setIsLoading(true);
       setIsPostsLoaded(false);
       try {
         setIsLoading(true);

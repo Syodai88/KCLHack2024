@@ -27,6 +27,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
   const [posts ,setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [isCompanyLoaded, setIsCompanyLoaded] = useState<boolean>(false);
+  const [isPostsLoaded, setIsPostsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -46,7 +47,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         setCurrentInterestCount(companyData.interestedCount);
         setCurrentInternCount(companyData.internCount);
         setCurrentEventJoinCount(companyData.eventJoinCount);
-        setCompanyName(companyData.name); // 投稿ページに企業名を渡すため
+        setCompanyName(companyData.name);
         setIsLoading(null);
       } catch (error) {
         setIsLoading("Error");
@@ -94,7 +95,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         setTimeout(() => {
           setIsLoading(null);
         }, 3000);
-      }
+      } 
     };
     if (userId && companyId) {
       fetchUserReactions();
@@ -103,9 +104,11 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
 
   // 企業に紐づいた投稿を取得
   useEffect(() => {
+    setIsPostsLoaded(false);
     const fetchPosts = async () => {
       if (!user || !companyId) return;
       try {
+        setIsLoading("Loading");
         const response = await axios.get('/api/fetchPostCard', {
           params: { companyId, loginUserId: user.uid },
         });
@@ -116,12 +119,14 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
+      } finally {
+        setIsPostsLoaded(true);
+        setIsLoading(null);
       }
     };
 
     fetchPosts();
   }, [user, companyId]);
-
 
 
 const [isInterestButtonDisabled, setIsInterestButtonDisabled] = useState(false);
@@ -187,10 +192,9 @@ const handleReactionClick = async (actionType: string) => {
     }, 1500); 
   }
 };
-
-  if (isLoading ==="Loading"){
+  if (isLoading === "Loading"){
     return <Loading/>
-  }else if (isLoading ==="Error"){
+  } else if (isLoading ==="Error"){
     return <Loading type="Error" message='Company Error'/>
   }
 
@@ -274,13 +278,15 @@ const handleReactionClick = async (actionType: string) => {
       {/* 投稿部分は以下に追加 */}
       <div className={styles.postsSection}>
         <h2>投稿一覧</h2>
-        {posts.length > 0 ? (
+        {isLoading === "Loading" ? (
+          <Loading/> 
+        ) : posts.length > 0 ? ( 
           posts.map((post) => (
             <PostCard key={post.id} post={post} loginUserId={user?.uid || ''} isLiked={post.isLiked} />
           ))
-        ) : (
+        ) : isPostsLoaded ?(
           <p>この企業に関連する投稿はありません。</p>
-        )}
+        ) : null}
       </div>
     </div>
   );

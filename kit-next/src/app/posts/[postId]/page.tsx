@@ -76,7 +76,7 @@ const PostDetailPage = () => {
 
   useEffect(() => {
     const fetchPostData = async () => {
-      if (postId) {
+      if (postId && user) {
         try {
           const response = await axios.get('/api/getPostComments/',{
             params: { 
@@ -87,7 +87,7 @@ const PostDetailPage = () => {
           setPost(response.data.post);
           setComments(response.data.comments);
           setCurrentLikeCount(response.data.post.likeCount);
-          setIsLikeState(response.data.post.isliked);
+          setIsLikeState(response.data.post.isLiked);
           setReplyTo(null); 
         } catch (err) {
           console.error('ポストの取得に失敗しました:', err);
