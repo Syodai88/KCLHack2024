@@ -41,30 +41,42 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
   const [currentLikeCount, setCurrentLikeCount] = useState<number>(post.likeCount);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLikeButtonDisabled, setIsLikeButtonDisabled] = useState<boolean>(false);
 
   const handleCardClick = () => {
     router.push(`/posts/${post.id}`);
   };
 
-  const handleLikeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    try {
-        const response = await axios.post('/api/postReaction', {
-          postId: post.id,
-          userId: loginUserId, 
-        });
-  
-        if (response.data.likeAdded) {
-          setIsLikeState(true);
-          setCurrentLikeCount((prev) => prev + 1);
-        } else {
-          setIsLikeState(false);
-          setCurrentLikeCount((prev) => prev - 1);
-        }
-      } catch (error) {
-        console.error('いいねの更新に失敗しました:', error);
-      }
-  };
+
+const handleLikeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.stopPropagation();
+  setIsLikeButtonDisabled(true);
+
+  // 現在の状態を保存（エラー時に復元するため）
+  const previousIsLikeState = isLikeState;
+  const previousLikeCount = currentLikeCount;
+
+  setIsLikeState(!isLikeState);
+  setCurrentLikeCount((prev) => (isLikeState ? prev - 1 : prev + 1));
+
+  try {
+    const response = await axios.post('/api/postReaction', {
+      postId: post.id,
+      userId: loginUserId,
+    });
+
+    if (!response.data) {
+      throw new Error('Invalid response data');
+    }
+  } catch (error) {
+    // エラーが発生した場合、状態を元に戻す
+    setIsLikeState(previousIsLikeState);
+    setCurrentLikeCount(previousLikeCount);
+    console.error('いいねの更新に失敗しました:', error);
+  } finally {
+    setIsLikeButtonDisabled(false);
+  }
+};
 
   const handleDeletePost = async () => {
     try {
@@ -137,7 +149,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, loginUserId, isLiked }) => {
         </CardContent>
         <div className={styles.actionButtons}>
           <div className={styles.reactionButtons}>
-            <button onClick={handleLikeClick} className={`${styles.button} ${isLikeState ? styles.liked : ''}`}>
+            <button onClick={handleLikeClick} className={`${styles.button} ${isLikeState ? styles.liked : ''}`} disabled={isLikeButtonDisabled}>
               {isLikeState ? <FaHeart /> : <FaRegHeart />}
               いいね {currentLikeCount}
             </button>
