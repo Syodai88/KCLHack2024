@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/interface/interface';
 import Loading from '@/components/common/Loading/Loading';
 import axios from 'axios';
-import { Tag,Post } from '@/interface/interface';
+import { Post } from '@/interface/interface';
 import PostCard from '@/components/common/PostCard/Postcard';
 
 
@@ -26,15 +26,19 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
   const [currentEventJoinCount, setCurrentEventJoinCount] = useState(0);
   const [posts ,setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [isCompanyLoaded, setIsCompanyLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
         setIsLoading("Loading");
+        setIsCompanyLoaded(false);
         const response = await fetch(`/api/getDbCompanyInfo?corporateNumber=${companyId}`);
         if (!response.ok) {
-          setIsLoading(null);
-          notFound();
+          setIsLoading("Error");
+          setTimeout(() => {
+            setIsLoading(null);
+          }, 3000);
           return;
         }
         const companyData: Company = await response.json();
@@ -46,7 +50,12 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         setIsLoading(null);
       } catch (error) {
         setIsLoading("Error");
+        setTimeout(() => {
+          setIsLoading(null);
+        }, 3000);
         console.error('企業情報の取得エラー:', error);
+      } finally {
+        setIsCompanyLoaded(true);
       }
     };
     fetchCompanyData();
@@ -115,66 +124,103 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
 
 
 
-  const handleReactionClick = async (actionType: string) => {
-    try {
-      const response = await fetch('/api/companyReaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ actionType:actionType, companyId:companyId, userId:user?.uid }),
-      });
+const [isInterestButtonDisabled, setIsInterestButtonDisabled] = useState(false);
+const [isInternButtonDisabled, setIsInternButtonDisabled] = useState(false);
+const [isEventJoinButtonDisabled, setIsEventJoinButtonDisabled] = useState(false);
 
-      if (response.ok) {
-        if (actionType === 'interest') {
-          setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
-          setIsInterested((prev) => !prev);
-        } else if (actionType === 'intern') {
-          setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
-          setIsInterned((prev) => !prev);
-        } else if (actionType === 'eventJoin') {
-          setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
-          setIsEventJoined((prev) => !prev);
-        }
-      } else {
-        console.error('Failed to update reaction');
-      }
-    } catch (error) {
-      console.error('Error updating reaction:', error);
+const handleReactionClick = async (actionType: string) => {
+  // 連続クリック防止
+  if (actionType === 'interest') {
+    setIsInterestButtonDisabled(true);
+  } else if (actionType === 'intern') {
+    setIsInternButtonDisabled(true);
+  } else if (actionType === 'eventJoin') {
+    setIsEventJoinButtonDisabled(true);
+  }
+
+  if (actionType === 'interest') {
+    setIsInterested((prev) => !prev);
+    setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
+  } else if (actionType === 'intern') {
+    setIsInterned((prev) => !prev);
+    setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
+  } else if (actionType === 'eventJoin') {
+    setIsEventJoined((prev) => !prev);
+    setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
+  }
+
+  try {
+    const response = await fetch('/api/companyReaction', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ actionType, companyId, userId: user?.uid }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  };
+  } catch (error) {
+    // エラーが発生した場合、状態を元に戻す
+    if (actionType === 'interest') {
+      setIsInterested((prev) => !prev);
+      setCurrentInterestCount((prevCount) => (isInterested ? prevCount - 1 : prevCount + 1));
+    } else if (actionType === 'intern') {
+      setIsInterned((prev) => !prev);
+      setCurrentInternCount((prevCount) => (isInterned ? prevCount - 1 : prevCount + 1));
+    } else if (actionType === 'eventJoin') {
+      setIsEventJoined((prev) => !prev);
+      setCurrentEventJoinCount((prevCount) => (isEventJoined ? prevCount - 1 : prevCount + 1));
+    }
+    console.error('Error updating reaction:', error);
+
+  } finally {
+    setTimeout(() => {
+      if (actionType === 'interest') {
+        setIsInterestButtonDisabled(false);
+      } else if (actionType === 'intern') {
+        setIsInternButtonDisabled(false);
+      } else if (actionType === 'eventJoin') {
+        setIsEventJoinButtonDisabled(false);
+      }
+    }, 1500); 
+  }
+};
 
   if (isLoading ==="Loading"){
     return <Loading/>
   }else if (isLoading ==="Error"){
     return <Loading type="Error" message='Company Error'/>
-  }else if (!company) {
+  }
+
+  if (isCompanyLoaded && !company) {
     return <div className={styles.error}>企業の詳細を読み込めませんでした</div>;
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.companyHeader}>
-        <h1 className={styles.companyName}>{company.name}</h1>
+        <h1 className={styles.companyName}>{company?.name}</h1>
       </div>
       <div className={styles.companyInfo}>
         <div className={styles.infoItem}>
           <h2>所在地</h2>
-          <p>{company.location || '情報がありません'}</p>
+          <p>{company?.location || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>従業員数</h2>
-          <p>{company.employeeNumberAi ?? '情報がありません'}</p>
+          <p>{company?.employeeNumberAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>事業概要</h2>
-          <p>{company.businessSummary || '情報がありません'}</p>
+          <p>{company?.businessSummary || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>事業概要（生成AIによる情報）</h2>
-          <p>{company.businessSummaryAi || '情報がありません'}</p>
+          <p>{company?.businessSummaryAi || '情報がありません'}</p>
         </div>
-        {company.companyUrl && (
+        {company?.companyUrl && (
           <div className={styles.infoItem}>
             <h2>公式サイト</h2>
             <p>
@@ -186,15 +232,15 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         )}
         <div className={styles.infoItem}>
           <h2>平均収入（生成AI）</h2>
-          <p>{company.averageSalaryAi || '情報がありません'}</p>
+          <p>{company?.averageSalaryAi || '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>平均年齢（生成AI）</h2>
-          <p>{company.averageAgeAi ?? '情報がありません'}</p>
+          <p>{company?.averageAgeAi ?? '情報がありません'}</p>
         </div>
         <div className={styles.infoItem}>
           <h2>平均勤続年数（生成AI）</h2>
-          <p>{company.averageContinuousServiceYearsAi ?? '情報がありません'}</p>
+          <p>{company?.averageContinuousServiceYearsAi ?? '情報がありません'}</p>
         </div>
       </div>
 
@@ -202,6 +248,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('interest')}
           className={`${styles.button} ${isInterested ? styles.interested : ''}`}
+          disabled={isInterestButtonDisabled}
         >
           <FaHeart />
           興味あり ({currentInterestCount})
@@ -209,6 +256,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('intern')}
           className={`${styles.button} ${isInterned ? styles.interned : ''}`}
+          disabled={isInternButtonDisabled}
         >
           <FaUserGraduate />
           インターン参加者 ({currentInternCount})
@@ -216,6 +264,7 @@ const Company: React.FC<{ companyId: string,setCompanyName: (name: string | null
         <button
           onClick={() => handleReactionClick('eventJoin')}
           className={`${styles.button} ${isEventJoined ? styles.attendedEvent : ''}`}
+          disabled={isEventJoinButtonDisabled}
         >
           <FaCalendarCheck />
           イベント参加者 ({currentEventJoinCount})
